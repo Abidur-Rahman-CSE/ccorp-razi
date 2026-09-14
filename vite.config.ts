@@ -46,6 +46,8 @@ export default defineConfig({
             'public/**',
             'bootstrap/ssr/**',
             'tailwind.config.js',
+            'graphify-out/**',
+            'reference/**',
             'resources/js/actions/**',
             'resources/js/components/ui/*',
             'resources/js/routes/**',
@@ -66,6 +68,8 @@ export default defineConfig({
         ignorePatterns: [
             '.github/**',
             'composer.json',
+            'graphify-out/**',
+            'reference/**',
             'resources/js/components/ui/*',
             'resources/views/mail/*',
         ],
