@@ -344,14 +344,14 @@ html.motion-ready .reveal-card.is-revealed {
 
 /* Liquid Glass Custom Cursor */
 .liquid-glass-cursor {
-    background: rgba(247, 245, 240, 0.45);
-    backdrop-filter: blur(20px) saturate(170%);
-    -webkit-backdrop-filter: blur(20px) saturate(170%);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    background: rgba(247, 245, 240, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(173, 135, 83, 0.45);
     box-shadow:
-        inset 0 1px 2px rgba(255, 255, 255, 0.9),
-        0 16px 36px -6px rgba(30, 33, 31, 0.12),
-        0 0 0 1px rgba(173, 135, 83, 0.3);
+        0 14px 32px -6px rgba(30, 33, 31, 0.18),
+        inset 0 1px 2px rgba(255, 255, 255, 0.95),
+        0 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
 /* Parallax Inner Image Container */

@@ -8,9 +8,9 @@ export function initProjectCursor(): void {
         cursor = document.createElement('div');
         cursor.id = 'project-cursor';
         cursor.className =
-            'fixed pointer-events-none z-50 flex flex-col items-center justify-center w-20 h-20 rounded-full liquid-glass-cursor opacity-0 scale-75 transition-all duration-300 ease-out -translate-x-1/2 -translate-y-1/2 text-charcoal select-none';
+            'fixed pointer-events-none z-50 flex flex-col items-center justify-center w-22 h-22 rounded-full liquid-glass-cursor opacity-0 scale-75 transition-all duration-250 ease-out -translate-x-1/2 -translate-y-1/2 select-none';
         cursor.innerHTML =
-            '<span class="font-serif italic text-[13px] tracking-wide text-[#1E211F] font-normal leading-none">Explore</span><span class="text-[10px] text-[#AD8753] font-sans leading-none mt-1 font-semibold">↗</span>';
+            '<span class="font-serif italic text-[15px] tracking-wide text-[#1E211F] font-semibold leading-none drop-shadow-xs">Explore</span><span class="text-[13px] text-[#AD8753] font-sans leading-none mt-1 font-bold">↗</span>';
         document.body.appendChild(cursor);
     }
 
