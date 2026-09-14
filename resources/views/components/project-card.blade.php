@@ -3,9 +3,9 @@
     'featured' => false,
 ])
 
-<article class="group relative flex flex-col bg-[#EFEAE2]/50 hairline-all overflow-hidden transition-all duration-300 hover:shadow-lg reveal-card" data-project-hover="true">
+<article class="group relative flex flex-col bg-[#EFEAE2]/50 hairline-all overflow-hidden transition-all duration-300 hover:shadow-lg reveal-card">
     {{-- Project Image Container --}}
-    <a href="{{ route('projects.show', $project['slug']) }}" class="relative w-full aspect-[16/10] overflow-hidden block bg-[#EFEAE2] parallax-wrap">
+    <a href="{{ route('projects.show', $project['slug']) }}" class="relative w-full aspect-[16/10] overflow-hidden block bg-[#EFEAE2] parallax-wrap" data-project-hover="true">
         <img src="{{ $project['cover_image'] }}" 
              alt="{{ $project['title'] }} - {{ $project['category'] }} in {{ $project['location'] }}"
              loading="lazy" 
