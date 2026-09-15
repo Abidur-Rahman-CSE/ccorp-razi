@@ -1,165 +1,184 @@
+import { getLenis } from './lenis';
+
 export function initProcessTimeline(): void {
-    const container = document.getElementById('methodology-interactive');
-    if (!container) return;
-
-    const navButtons = Array.from(
-        container.querySelectorAll<HTMLButtonElement>('[data-step-index]'),
+    const stackContainer = document.getElementById(
+        'methodology-stack-container',
     );
-    const panels = Array.from(
-        container.querySelectorAll<HTMLElement>('[data-step-panel]'),
+    if (!stackContainer) return;
+
+    const cards = Array.from(
+        stackContainer.querySelectorAll<HTMLElement>('[data-stack-card]'),
     );
-    const prevBtn = document.getElementById(
-        'methodology-prev-btn',
-    ) as HTMLButtonElement | null;
-    const nextBtn = document.getElementById(
-        'methodology-next-btn',
-    ) as HTMLButtonElement | null;
-    const indicator = document.getElementById('methodology-active-indicator');
-    const progressBar = document.getElementById('methodology-bar');
+    const chips = Array.from(
+        document.querySelectorAll<HTMLButtonElement>('[data-stack-target]'),
+    );
+    const counterEl = document.getElementById('methodology-counter');
+    const phaseLabelEl = document.getElementById('methodology-phase-label');
+    const progressBar = document.getElementById('methodology-progress-bar');
 
-    if (navButtons.length === 0 || panels.length === 0) return;
+    if (cards.length === 0) return;
 
-    let currentIndex = 0;
-    const totalSteps = panels.length;
+    const totalSteps = cards.length;
+    let activeIndex = 0;
+    let isClickScrolling = false;
+    let clickTimeout: number | null = null;
 
-    function goToStep(index: number) {
-        if (index < 0 || index >= totalSteps || index === currentIndex) return;
+    // Cache phase titles from cards
+    const phaseTitles: string[] = cards.map((card) => {
+        const titleEl = card.querySelector('h3');
+        return titleEl ? titleEl.textContent?.trim() || '' : '';
+    });
 
-        const currentPanel = panels[currentIndex];
-        const nextPanel = panels[index];
-        const currentBtn = navButtons[currentIndex];
-        const nextBtnEl = navButtons[index];
+    function updateActiveState(index: number) {
+        if (index < 0 || index >= totalSteps) return;
+        activeIndex = index;
 
-        if (!currentPanel || !nextPanel || !currentBtn || !nextBtnEl) return;
-
-        // Transition out current panel
-        currentPanel.style.opacity = '0';
-        currentPanel.style.transform = 'translateY(8px)';
-
-        setTimeout(() => {
-            currentPanel.classList.add('hidden');
-            currentPanel.classList.remove('block');
-
-            // Activate new panel
-            nextPanel.classList.remove('hidden');
-            nextPanel.classList.add('block');
-            nextPanel.style.opacity = '0';
-            nextPanel.style.transform = 'translateY(8px)';
-
-            // Force reflow
-            void nextPanel.offsetHeight;
-
-            nextPanel.style.opacity = '1';
-            nextPanel.style.transform = 'translateY(0)';
-        }, 180);
-
-        // Update button active states
-        currentBtn.classList.remove(
-            'bg-[#1E211F]',
-            'text-white',
-            'border-[#1E211F]',
-            'shadow-sm',
-        );
-        currentBtn.classList.add(
-            'bg-[#FAF8F5]',
-            'text-[#676660]',
-            'border-black/10',
-        );
-
-        nextBtnEl.classList.remove(
-            'bg-[#FAF8F5]',
-            'text-[#676660]',
-            'border-black/10',
-        );
-        nextBtnEl.classList.add(
-            'bg-[#1E211F]',
-            'text-white',
-            'border-[#1E211F]',
-            'shadow-sm',
-        );
-
-        // Scroll active button into view horizontally on mobile
-        nextBtnEl.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest',
-            inline: 'center',
+        // Update card visual depth and stacking states
+        cards.forEach((card, idx) => {
+            if (idx === index) {
+                card.classList.add('is-focused');
+                card.classList.remove('is-stacked-behind');
+            } else if (idx < index) {
+                card.classList.remove('is-focused');
+                card.classList.add('is-stacked-behind');
+            } else {
+                card.classList.remove('is-focused', 'is-stacked-behind');
+            }
         });
 
-        // Update progress bar & indicator text
-        if (indicator) {
-            const stepStr = String(index + 1).padStart(2, '0');
-            indicator.textContent = `${stepStr} / ${String(totalSteps).padStart(2, '0')}`;
+        // Update sticky milestone navigation chips
+        chips.forEach((chip, idx) => {
+            if (idx === index) {
+                chip.classList.add(
+                    'bg-[#1E211F]',
+                    'text-white',
+                    'border-[#1E211F]',
+                    'shadow-xs',
+                );
+                chip.classList.remove(
+                    'bg-white',
+                    'text-[#676660]',
+                    'border-black/10',
+                );
+
+                const stepSpan = chip.querySelector('span');
+                if (stepSpan) {
+                    stepSpan.classList.add('text-[#AD8753]');
+                    stepSpan.classList.remove('text-[#AD8753]/80');
+                }
+
+                // Smoothly center the active chip in the horizontal container
+                chip.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest',
+                    inline: 'center',
+                });
+            } else {
+                chip.classList.remove(
+                    'bg-[#1E211F]',
+                    'text-white',
+                    'border-[#1E211F]',
+                    'shadow-xs',
+                );
+                chip.classList.add(
+                    'bg-white',
+                    'text-[#676660]',
+                    'border-black/10',
+                );
+
+                const stepSpan = chip.querySelector('span');
+                if (stepSpan) {
+                    stepSpan.classList.remove('text-[#AD8753]');
+                    stepSpan.classList.add('text-[#AD8753]/80');
+                }
+            }
+        });
+
+        // Update counter text & phase label
+        if (counterEl) {
+            const currentStepStr = String(index + 1).padStart(2, '0');
+            const totalStepStr = String(totalSteps).padStart(2, '0');
+            counterEl.textContent = `Phase ${currentStepStr} / ${totalStepStr}`;
         }
+
+        if (phaseLabelEl && phaseTitles[index]) {
+            const shortTitle = phaseTitles[index].split('&')[0].trim();
+            phaseLabelEl.textContent = shortTitle;
+        }
+
+        // Update progress bar
         if (progressBar) {
             const percent = ((index + 1) / totalSteps) * 100;
             progressBar.style.width = `${percent}%`;
         }
-
-        // Update Prev / Next button states
-        if (prevBtn) prevBtn.disabled = index === 0;
-        if (nextBtn) nextBtn.disabled = index === totalSteps - 1;
-
-        currentIndex = index;
     }
 
-    // Bind tab clicks
-    navButtons.forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const idx = parseInt(
-                btn.getAttribute('data-step-index') || '0',
-                10,
-            );
-            goToStep(idx);
-        });
-    });
-
-    // Bind Prev / Next arrows
-    if (prevBtn) {
-        prevBtn.addEventListener('click', () => {
-            if (currentIndex > 0) goToStep(currentIndex - 1);
-        });
-    }
-
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            if (currentIndex < totalSteps - 1) goToStep(currentIndex + 1);
-        });
-    }
-
-    // Keyboard Arrow navigation when container is in focus
-    container.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key === 'ArrowLeft' && currentIndex > 0) {
-            goToStep(currentIndex - 1);
-        } else if (e.key === 'ArrowRight' && currentIndex < totalSteps - 1) {
-            goToStep(currentIndex + 1);
+    // Scroll calculation to detect which card is actively in focus
+    let ticking = false;
+    function onScroll() {
+        if (isClickScrolling) return;
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                evaluateCardPositions();
+                ticking = false;
+            });
+            ticking = true;
         }
+    }
+
+    function evaluateCardPositions() {
+        // Threshold where card is considered "active" (around the sticky header)
+        const stickyThreshold = 220; // pixels from top of viewport
+
+        let newActiveIndex = 0;
+
+        for (let i = 0; i < cards.length; i++) {
+            const rect = cards[i].getBoundingClientRect();
+            if (rect.top <= stickyThreshold) {
+                newActiveIndex = i;
+            }
+        }
+
+        if (newActiveIndex !== activeIndex) {
+            updateActiveState(newActiveIndex);
+        }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Handle clicks on milestone chips to smooth-scroll
+    chips.forEach((chip) => {
+        chip.addEventListener('click', () => {
+            const targetIdx = Number(chip.getAttribute('data-stack-target'));
+            const targetCard = cards[targetIdx];
+            if (!targetCard) return;
+
+            isClickScrolling = true;
+            if (clickTimeout) clearTimeout(clickTimeout);
+
+            updateActiveState(targetIdx);
+
+            const lenis = getLenis();
+            if (lenis) {
+                lenis.scrollTo(targetCard, {
+                    offset: -140,
+                    duration: 1.2,
+                    onComplete: () => {
+                        isClickScrolling = false;
+                    },
+                });
+            } else {
+                targetCard.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                });
+                clickTimeout = window.setTimeout(() => {
+                    isClickScrolling = false;
+                }, 800);
+            }
+        });
     });
 
-    // Touch swipe support on panels
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    container.addEventListener(
-        'touchstart',
-        (e: TouchEvent) => {
-            touchStartX = e.changedTouches[0].screenX;
-        },
-        { passive: true },
-    );
-
-    container.addEventListener(
-        'touchend',
-        (e: TouchEvent) => {
-            touchEndX = e.changedTouches[0].screenX;
-            const diff = touchStartX - touchEndX;
-            if (Math.abs(diff) > 50) {
-                if (diff > 0 && currentIndex < totalSteps - 1) {
-                    goToStep(currentIndex + 1);
-                } else if (diff < 0 && currentIndex > 0) {
-                    goToStep(currentIndex - 1);
-                }
-            }
-        },
-        { passive: true },
-    );
+    // Initial evaluation
+    evaluateCardPositions();
 }

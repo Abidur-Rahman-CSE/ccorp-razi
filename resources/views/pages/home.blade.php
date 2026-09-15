@@ -294,38 +294,44 @@
             </div>
         </div>
 
-        {{-- Interactive Methodology Rail & Stage --}}
-        <div id="methodology-interactive" class="bg-white hairline-all p-6 lg:p-10 shadow-sm">
-            {{-- Horizontal Milestone Navigation Bar --}}
-            <div class="flex items-center justify-between gap-4 pb-6 border-b border-black/10">
-                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 w-full">
-                    @foreach($processSteps as $index => $step)
-                        <button type="button" 
-                                data-step-index="{{ $index }}"
-                                class="methodology-nav-btn group flex items-center gap-2 px-3.5 py-2 text-left rounded-none border transition-all duration-200 cursor-pointer whitespace-nowrap {{ $index === 0 ? 'bg-[#1E211F] text-white border-[#1E211F] shadow-sm' : 'bg-[#FAF8F5] text-[#676660] border-black/10 hover:border-[#AD8753]/50 hover:text-[#1E211F]' }}">
-                            <span class="text-[11px] font-bold font-mono {{ $index === 0 ? 'text-[#AD8753]' : 'text-[#AD8753]/80 group-hover:text-[#AD8753]' }}">{{ $step['step'] }}</span>
-                            <span class="text-[12px] tracking-[0.04em] font-medium uppercase">{{ explode(' & ', $step['title'])[0] }}</span>
-                        </button>
-                    @endforeach
-                </div>
-
-                {{-- Previous / Next Step Buttons --}}
-                <div class="hidden sm:flex items-center gap-2 shrink-0">
-                    <button type="button" id="methodology-prev-btn" aria-label="Previous architectural phase" disabled class="w-9 h-9 flex items-center justify-center border border-black/15 bg-white text-[#1E211F] hover:border-[#AD8753] hover:text-[#AD8753] transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed">
-                        ←
+        {{-- Sticky Milestone Navigation Scrubber --}}
+        <div id="methodology-sticky-tracker" class="sticky top-20 lg:top-24 z-30 bg-[#F7F5F0]/95 backdrop-blur-md py-3 px-4 sm:px-6 hairline-all mb-10 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xs transition-all duration-300">
+            {{-- Horizontal Milestone Chips --}}
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full md:w-auto py-1">
+                @foreach($processSteps as $index => $step)
+                    <button type="button" 
+                            data-stack-target="{{ $index }}"
+                            class="methodology-tracker-chip group flex items-center gap-1.5 px-3 py-1.5 text-left transition-all duration-200 cursor-pointer whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.08em] border {{ $index === 0 ? 'bg-[#1E211F] text-white border-[#1E211F] shadow-xs' : 'bg-white text-[#676660] border-black/10 hover:border-[#AD8753]/50 hover:text-[#1E211F]' }}">
+                        <span class="font-bold font-mono {{ $index === 0 ? 'text-[#AD8753]' : 'text-[#AD8753]/80 group-hover:text-[#AD8753]' }}">{{ $step['step'] }}</span>
+                        <span class="hidden sm:inline">{{ explode(' & ', $step['title'])[0] }}</span>
                     </button>
-                    <button type="button" id="methodology-next-btn" aria-label="Next architectural phase" class="w-9 h-9 flex items-center justify-center border border-black/15 bg-white text-[#1E211F] hover:border-[#AD8753] hover:text-[#AD8753] transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed">
-                        →
-                    </button>
-                </div>
+                @endforeach
             </div>
 
-            {{-- Dynamic Stage Container (Pre-rendered for 100% SEO, toggled reactively) --}}
-            <div class="mt-8 relative min-h-[380px]">
-                @foreach($processSteps as $index => $step)
-                    <div data-step-panel="{{ $index }}" 
-                         class="methodology-panel grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center transition-all duration-300 ease-out {{ $index === 0 ? 'block opacity-100' : 'hidden opacity-0' }}">
-                        {{-- Left Column: Architectural Milestone Details --}}
+            {{-- Live Milestone Counter & Progress Scrubber --}}
+            <div class="flex items-center justify-between w-full md:w-auto gap-4 shrink-0 text-[11px] text-[#676660]">
+                <div class="flex items-center gap-2 font-mono text-[11px]">
+                    <span class="text-[#AD8753] font-bold" id="methodology-counter">Phase 01 / 08</span>
+                    <span class="hidden lg:inline text-[#A1A09A]">•</span>
+                    <span class="hidden lg:inline uppercase tracking-[0.10em] text-[#1E211F] font-sans font-medium" id="methodology-phase-label">{{ explode(' & ', $processSteps[0]['title'])[0] }}</span>
+                </div>
+                <div class="w-32 sm:w-40 bg-black/10 h-[3px] rounded-full overflow-hidden">
+                    <div id="methodology-progress-bar" class="bg-[#AD8753] h-full w-[12.5%] transition-all duration-300"></div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Scroll-Driven Sticky Stack Cards Container --}}
+        <div id="methodology-stack-container" class="relative space-y-12 lg:space-y-16 pb-20">
+            @foreach($processSteps as $index => $step)
+                <article id="methodology-card-{{ $index }}" 
+                         data-stack-card="{{ $index }}"
+                         style="--stack-index: {{ $index }};"
+                         class="methodology-stack-card bg-white hairline-all p-6 lg:p-12 transition-all duration-500 {{ $index === 0 ? 'is-focused' : '' }}">
+                    
+                    {{-- Inner Card Grid --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+                        {{-- Left Column: Architectural Milestone Editorial Content --}}
                         <div class="lg:col-span-6 flex flex-col justify-between space-y-6">
                             <div>
                                 <div class="flex items-center justify-between gap-4 mb-3">
@@ -352,7 +358,7 @@
                                     <h4 class="text-[11px] uppercase tracking-[0.18em] text-[#AD8753] font-semibold mb-3">
                                         Milestone Deliverables:
                                     </h4>
-                                    <ul class="space-y-2 text-[13px] text-[#1E211F]">
+                                    <ul class="space-y-2.5 text-[13px] text-[#1E211F]">
                                         @foreach($step['details'] as $detail)
                                             <li class="flex items-start gap-2.5">
                                                 <span class="text-[#AD8753] mt-0.5 font-bold">✦</span>
@@ -364,12 +370,12 @@
                             </div>
 
                             <div class="pt-4 flex items-center gap-4">
-                                <a href="#consultation" 
-                                   class="px-6 py-3 bg-[#1E211F] text-[#F7F5F0] hover:bg-[#AD8753] text-[11px] uppercase tracking-[0.18em] font-medium transition-colors inline-flex items-center gap-2">
-                                    <span>Discuss This Phase</span>
+                                <a href="{{ route('contact') }}?subject={{ urlencode('Inquiry for Phase ' . $step['step'] . ': ' . $step['title']) }}" 
+                                   class="px-6 py-3.5 bg-[#1E211F] text-[#F7F5F0] hover:bg-[#AD8753] text-[11px] uppercase tracking-[0.18em] font-medium transition-colors inline-flex items-center gap-2">
+                                    <span>Discuss Phase {{ $step['step'] }}</span>
                                     <span>→</span>
                                 </a>
-                                <span class="text-[12px] text-[#676660] font-sans">
+                                <span class="text-[12px] text-[#676660] font-sans hidden sm:inline">
                                     Single-Point Accountability Guarantee
                                 </span>
                             </div>
@@ -383,16 +389,17 @@
                                      loading="lazy" 
                                      width="800" 
                                      height="600" 
-                                     class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]">
+                                     draggable="false"
+                                     class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03] select-none">
 
                                 {{-- Floating Glass Status Pills on Image --}}
-                                <div class="absolute top-4 left-4 z-10">
+                                <div class="absolute top-4 left-4 z-10 pointer-events-none">
                                     <span class="glass-pill px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-[#1E211F] font-semibold">
                                         Milestone {{ $step['step'] }}
                                     </span>
                                 </div>
 
-                                <div class="absolute bottom-4 right-4 z-10">
+                                <div class="absolute bottom-4 right-4 z-10 pointer-events-none">
                                     <span class="glass-pill px-3 py-1.5 text-[10px] uppercase tracking-[0.16em] text-[#AD8753] font-semibold">
                                         {{ $step['duration'] }}
                                     </span>
@@ -400,19 +407,8 @@
                             </div>
                         </div>
                     </div>
-                @endforeach
-            </div>
-
-            {{-- Progress Scrubber Bar --}}
-            <div class="mt-8 pt-4 border-t border-black/10 flex items-center justify-between text-[11px] text-[#676660]">
-                <div class="flex items-center gap-2">
-                    <span class="font-mono text-[#AD8753] font-bold" id="methodology-active-indicator">01 / 08</span>
-                    <span class="uppercase tracking-[0.14em]">Phase Progression</span>
-                </div>
-                <div class="w-48 sm:w-64 bg-black/10 h-[3px] rounded-full overflow-hidden">
-                    <div id="methodology-bar" class="bg-[#AD8753] h-full w-[12.5%] transition-all duration-300"></div>
-                </div>
-            </div>
+                </article>
+            @endforeach
         </div>
     </section>
 
