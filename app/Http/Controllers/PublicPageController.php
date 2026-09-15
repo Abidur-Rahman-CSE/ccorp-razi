@@ -17,7 +17,7 @@ class PublicPageController extends Controller
     {
         $featuredProjects = ProjectData::featured();
         $signatureServices = ServiceData::featured();
-        $processSteps = array_slice(ProcessData::all(), 0, 5);
+        $processSteps = ProcessData::all();
         $faqs = FaqData::all();
 
         return view('pages.home', [

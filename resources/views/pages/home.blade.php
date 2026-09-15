@@ -277,39 +277,142 @@
         </div>
     </section>
 
-    {{-- 8-STEP ARCHITECTURAL PROCESS PREVIEW --}}
+    {{-- 8-STEP ARCHITECTURAL PROCESS & REACTIVE STAGECRAFT --}}
     <section class="py-24 lg:py-32 px-6 lg:px-12 max-w-7xl mx-auto" id="process">
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <x-section-heading 
                 eyebrow="Methodology"
                 title="The Journey from Brief to Handover"
                 description="A disciplined, transparent workflow structured into predictable architectural milestones."
             />
-            <a href="{{ route('process') }}" 
-               class="inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.16em] font-medium text-[#1E211F] hover:text-[#AD8753] transition-colors pb-2 hairline-b border-[#1E211F]">
-                <span>Inspect Full 8 Steps</span>
-                <span>→</span>
-            </a>
+            <div class="flex items-center gap-4 pb-2">
+                <a href="{{ route('process') }}" 
+                   class="inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.16em] font-medium text-[#1E211F] hover:text-[#AD8753] transition-colors hairline-b border-[#1E211F] pb-1">
+                    <span>Inspect Full Methodology</span>
+                    <span>→</span>
+                </a>
+            </div>
         </div>
 
-        {{-- Progress Timeline Line --}}
-        <div class="w-full bg-black/10 h-[2px] mb-8 relative overflow-hidden">
-            <div id="process-timeline-progress" class="h-full bg-[#AD8753] w-0 transition-all duration-300"></div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
-            @foreach($processSteps as $step)
-                <div class="process-step-item p-6 bg-white hairline-all flex flex-col justify-between reveal-card">
-                    <div>
-                        <span class="step-number text-[11px] font-bold text-[#AD8753] block mb-2 transition-all">{{ $step['step'] }}</span>
-                        <h3 class="font-serif text-lg text-[#1E211F] leading-snug mb-2">{{ $step['title'] }}</h3>
-                        <p class="text-[12px] text-[#676660] leading-relaxed">{{ $step['description'] }}</p>
-                    </div>
-                    <div class="mt-6 pt-3 hairline-t text-[11px] text-[#AD8753] uppercase tracking-[0.12em] font-medium">
-                        {{ $step['duration'] }}
-                    </div>
+        {{-- Interactive Methodology Rail & Stage --}}
+        <div id="methodology-interactive" class="bg-white hairline-all p-6 lg:p-10 shadow-sm">
+            {{-- Horizontal Milestone Navigation Bar --}}
+            <div class="flex items-center justify-between gap-4 pb-6 border-b border-black/10">
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 w-full">
+                    @foreach($processSteps as $index => $step)
+                        <button type="button" 
+                                data-step-index="{{ $index }}"
+                                class="methodology-nav-btn group flex items-center gap-2 px-3.5 py-2 text-left rounded-none border transition-all duration-200 cursor-pointer whitespace-nowrap {{ $index === 0 ? 'bg-[#1E211F] text-white border-[#1E211F] shadow-sm' : 'bg-[#FAF8F5] text-[#676660] border-black/10 hover:border-[#AD8753]/50 hover:text-[#1E211F]' }}">
+                            <span class="text-[11px] font-bold font-mono {{ $index === 0 ? 'text-[#AD8753]' : 'text-[#AD8753]/80 group-hover:text-[#AD8753]' }}">{{ $step['step'] }}</span>
+                            <span class="text-[12px] tracking-[0.04em] font-medium uppercase">{{ explode(' & ', $step['title'])[0] }}</span>
+                        </button>
+                    @endforeach
                 </div>
-            @endforeach
+
+                {{-- Previous / Next Step Buttons --}}
+                <div class="hidden sm:flex items-center gap-2 shrink-0">
+                    <button type="button" id="methodology-prev-btn" aria-label="Previous architectural phase" disabled class="w-9 h-9 flex items-center justify-center border border-black/15 bg-white text-[#1E211F] hover:border-[#AD8753] hover:text-[#AD8753] transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed">
+                        ←
+                    </button>
+                    <button type="button" id="methodology-next-btn" aria-label="Next architectural phase" class="w-9 h-9 flex items-center justify-center border border-black/15 bg-white text-[#1E211F] hover:border-[#AD8753] hover:text-[#AD8753] transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed">
+                        →
+                    </button>
+                </div>
+            </div>
+
+            {{-- Dynamic Stage Container (Pre-rendered for 100% SEO, toggled reactively) --}}
+            <div class="mt-8 relative min-h-[380px]">
+                @foreach($processSteps as $index => $step)
+                    <div data-step-panel="{{ $index }}" 
+                         class="methodology-panel grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center transition-all duration-300 ease-out {{ $index === 0 ? 'block opacity-100' : 'hidden opacity-0' }}">
+                        {{-- Left Column: Architectural Milestone Details --}}
+                        <div class="lg:col-span-6 flex flex-col justify-between space-y-6">
+                            <div>
+                                <div class="flex items-center justify-between gap-4 mb-3">
+                                    <span class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold">
+                                        <span>Phase {{ $step['step'] }} of 08</span>
+                                        <span>•</span>
+                                        <span>{{ $step['duration'] }}</span>
+                                    </span>
+                                    <span class="text-[11px] uppercase tracking-[0.16em] text-[#676660]">
+                                        {{ $step['bengali_title'] }}
+                                    </span>
+                                </div>
+
+                                <h3 class="font-serif text-3xl sm:text-4xl text-[#1E211F] font-normal tracking-[-0.02em] leading-tight">
+                                    {{ $step['title'] }}
+                                </h3>
+
+                                <p class="mt-4 text-[15px] leading-relaxed text-[#676660] font-light">
+                                    {{ $step['description'] }}
+                                </p>
+
+                                {{-- Scope & Deliverables Checklist --}}
+                                <div class="mt-6 pt-6 border-t border-black/10">
+                                    <h4 class="text-[11px] uppercase tracking-[0.18em] text-[#AD8753] font-semibold mb-3">
+                                        Milestone Deliverables:
+                                    </h4>
+                                    <ul class="space-y-2 text-[13px] text-[#1E211F]">
+                                        @foreach($step['details'] as $detail)
+                                            <li class="flex items-start gap-2.5">
+                                                <span class="text-[#AD8753] mt-0.5 font-bold">✦</span>
+                                                <span class="font-normal">{{ $detail }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 flex items-center gap-4">
+                                <a href="#consultation" 
+                                   class="px-6 py-3 bg-[#1E211F] text-[#F7F5F0] hover:bg-[#AD8753] text-[11px] uppercase tracking-[0.18em] font-medium transition-colors inline-flex items-center gap-2">
+                                    <span>Discuss This Phase</span>
+                                    <span>→</span>
+                                </a>
+                                <span class="text-[12px] text-[#676660] font-sans">
+                                    Single-Point Accountability Guarantee
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- Right Column: Architectural Photography Stage --}}
+                        <div class="lg:col-span-6">
+                            <div class="relative aspect-[4/3] w-full overflow-hidden bg-[#EFEAE2] hairline-all shadow-md group">
+                                <img src="{{ $step['image'] }}" 
+                                     alt="{{ $step['title'] }} - Champion Interior Design Methodology" 
+                                     loading="lazy" 
+                                     width="800" 
+                                     height="600" 
+                                     class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]">
+
+                                {{-- Floating Glass Status Pills on Image --}}
+                                <div class="absolute top-4 left-4 z-10">
+                                    <span class="glass-pill px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-[#1E211F] font-semibold">
+                                        Milestone {{ $step['step'] }}
+                                    </span>
+                                </div>
+
+                                <div class="absolute bottom-4 right-4 z-10">
+                                    <span class="glass-pill px-3 py-1.5 text-[10px] uppercase tracking-[0.16em] text-[#AD8753] font-semibold">
+                                        {{ $step['duration'] }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            {{-- Progress Scrubber Bar --}}
+            <div class="mt-8 pt-4 border-t border-black/10 flex items-center justify-between text-[11px] text-[#676660]">
+                <div class="flex items-center gap-2">
+                    <span class="font-mono text-[#AD8753] font-bold" id="methodology-active-indicator">01 / 08</span>
+                    <span class="uppercase tracking-[0.14em]">Phase Progression</span>
+                </div>
+                <div class="w-48 sm:w-64 bg-black/10 h-[3px] rounded-full overflow-hidden">
+                    <div id="methodology-bar" class="bg-[#AD8753] h-full w-[12.5%] transition-all duration-300"></div>
+                </div>
+            </div>
         </div>
     </section>
 
