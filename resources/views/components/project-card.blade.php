@@ -5,22 +5,23 @@
 
 <article class="group relative flex flex-col bg-[#EFEAE2]/50 hairline-all overflow-hidden transition-all duration-300 hover:shadow-lg reveal-card">
     {{-- Project Image Container --}}
-    <a href="{{ route('projects.show', $project['slug']) }}" class="relative w-full aspect-[16/10] overflow-hidden block bg-[#EFEAE2] parallax-wrap" data-project-hover="true">
+    <a href="{{ route('projects.show', $project['slug']) }}" class="relative w-full aspect-[16/10] overflow-hidden block bg-[#EFEAE2] parallax-wrap select-none" data-project-hover="true">
         <img src="{{ $project['cover_image'] }}" 
              alt="{{ $project['title'] }} - {{ $project['category'] }} in {{ $project['location'] }}"
              loading="lazy" 
              width="800" 
              height="500" 
-             class="w-full h-full object-cover parallax-img transition-transform duration-700 ease-out group-hover:scale-[1.04]">
+             draggable="false"
+             class="w-full h-full object-cover parallax-img transition-transform duration-700 ease-out group-hover:scale-[1.04] pointer-events-none select-none">
         
         {{-- Floating Glass Status Pill --}}
-        <div class="absolute top-4 left-4 z-10">
+        <div class="absolute top-4 left-4 z-10 pointer-events-none">
             <span class="glass-pill px-3 py-1 text-[10px] uppercase tracking-[0.16em] text-[#1E211F] font-semibold">
                 {{ $project['location'] }}
             </span>
         </div>
 
-        <div class="absolute top-4 right-4 z-10">
+        <div class="absolute top-4 right-4 z-10 pointer-events-none">
             <span class="glass-pill px-3 py-1 text-[10px] uppercase tracking-[0.16em] text-[#AD8753] font-semibold">
                 {{ $project['year'] }}
             </span>

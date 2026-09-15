@@ -342,16 +342,45 @@ html.motion-ready .reveal-card.is-revealed {
     opacity: 1;
 }
 
-/* Liquid Glass Custom Cursor */
+/* Hide native OS cursor on project images so the Liquid Glass Explore lens acts as the cursor */
+[data-project-hover],
+[data-project-hover] * {
+    cursor: none !important;
+}
+
+/* Custom Cursor Root Container: instant hardware-accelerated positioning, 0 lag */
+#project-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 99999;
+    contain: layout style;
+    will-change: transform;
+}
+
+/* Liquid Glass Custom Cursor Badge: spring scale and opacity blooming */
 .liquid-glass-cursor {
-    background: rgba(247, 245, 240, 0.92);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(173, 135, 83, 0.45);
+    background: rgba(247, 245, 240, 0.78);
+    backdrop-filter: blur(14px) saturate(180%);
+    -webkit-backdrop-filter: blur(14px) saturate(180%);
+    border: 1px solid rgba(173, 135, 83, 0.48);
     box-shadow:
-        0 14px 32px -6px rgba(30, 33, 31, 0.18),
+        0 12px 28px -6px rgba(30, 33, 31, 0.18),
         inset 0 1px 2px rgba(255, 255, 255, 0.95),
-        0 0 0 1px rgba(255, 255, 255, 0.5);
+        0 0 0 1px rgba(255, 255, 255, 0.35);
+    transform-origin: center center;
+    will-change: transform, opacity;
+    opacity: 0;
+    transform: scale(0.5);
+    transition:
+        opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-glass-cursor.is-active {
+    opacity: 1;
+    transform: scale(1);
 }
 
 /* Parallax Inner Image Container */
