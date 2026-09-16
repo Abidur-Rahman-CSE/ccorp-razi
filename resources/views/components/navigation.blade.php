@@ -1,7 +1,7 @@
 <header class="fixed top-0 left-0 right-0 z-50" id="primary-nav">
-    {{-- Micro Architectural Top Bar --}}
-    <div class="hidden lg:block bg-[#1E211F] text-[#EFEAE2] text-[11px] tracking-[0.18em] uppercase py-2 px-6 hairline-b border-black/20">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
+    {{-- Micro Architectural Top Bar (Shows ONLY at screen top, hides on scroll down) --}}
+    <div id="top-bar-dark" class="hidden lg:block bg-[#1E211F] text-[#EFEAE2] text-[11px] tracking-[0.18em] uppercase px-6 hairline-b border-black/20 overflow-hidden">
+        <div class="max-w-7xl mx-auto flex items-center justify-between h-9">
             <div class="flex items-center gap-6">
                 <span>Dhaka, Bangladesh</span>
                 <span class="text-[#AD8753]">✦</span>

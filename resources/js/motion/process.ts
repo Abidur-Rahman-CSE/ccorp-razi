@@ -12,6 +12,7 @@ export function initProcessTimeline(): void {
     const chips = Array.from(
         document.querySelectorAll<HTMLButtonElement>('[data-stack-target]'),
     );
+    const tracker = document.getElementById('methodology-sticky-tracker');
     const counterEl = document.getElementById('methodology-counter');
     const phaseLabelEl = document.getElementById('methodology-phase-label');
     const progressBar = document.getElementById('methodology-progress-bar');
@@ -56,7 +57,7 @@ export function initProcessTimeline(): void {
                     'shadow-xs',
                 );
                 chip.classList.remove(
-                    'bg-white',
+                    'bg-white/80',
                     'text-[#676660]',
                     'border-black/10',
                 );
@@ -81,7 +82,7 @@ export function initProcessTimeline(): void {
                     'shadow-xs',
                 );
                 chip.classList.add(
-                    'bg-white',
+                    'bg-white/80',
                     'text-[#676660]',
                     'border-black/10',
                 );
@@ -98,7 +99,7 @@ export function initProcessTimeline(): void {
         if (counterEl) {
             const currentStepStr = String(index + 1).padStart(2, '0');
             const totalStepStr = String(totalSteps).padStart(2, '0');
-            counterEl.textContent = `Phase ${currentStepStr} / ${totalStepStr}`;
+            counterEl.textContent = `${currentStepStr} / ${totalStepStr}`;
         }
 
         if (phaseLabelEl && phaseTitles[index]) {
@@ -113,7 +114,7 @@ export function initProcessTimeline(): void {
         }
     }
 
-    // Scroll calculation to detect which card is actively in focus
+    // Scroll calculation to detect active card and manage tracker exit
     let ticking = false;
     function onScroll() {
         if (isClickScrolling) return;
@@ -127,9 +128,8 @@ export function initProcessTimeline(): void {
     }
 
     function evaluateCardPositions() {
-        // Threshold where card is considered "active" (around the sticky header)
-        const stickyThreshold = 220; // pixels from top of viewport
-
+        const isDesktop = window.innerWidth >= 1024;
+        const stickyThreshold = isDesktop ? 180 : 130;
         let newActiveIndex = 0;
 
         for (let i = 0; i < cards.length; i++) {
@@ -158,10 +158,13 @@ export function initProcessTimeline(): void {
 
             updateActiveState(targetIdx);
 
+            const isDesktop = window.innerWidth >= 1024;
+            const scrollOffset = isDesktop ? -135 : -90;
+
             const lenis = getLenis();
             if (lenis) {
                 lenis.scrollTo(targetCard, {
-                    offset: -140,
+                    offset: scrollOffset,
                     duration: 1.2,
                     onComplete: () => {
                         isClickScrolling = false;

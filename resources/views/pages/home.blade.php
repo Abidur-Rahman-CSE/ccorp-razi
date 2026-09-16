@@ -277,8 +277,8 @@
         </div>
     </section>
 
-    {{-- 8-STEP ARCHITECTURAL PROCESS & REACTIVE STAGECRAFT --}}
-    <section class="py-24 lg:py-32 px-6 lg:px-12 max-w-7xl mx-auto" id="process">
+    {{-- 8-STEP ARCHITECTURAL PROCESS & SCROLL-DRIVEN STACKED DOSSIERS --}}
+    <section class="pt-24 lg:pt-32 pb-12 lg:pb-16 px-6 lg:px-12 max-w-7xl mx-auto" id="process">
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <x-section-heading 
                 eyebrow="Methodology"
@@ -294,74 +294,76 @@
             </div>
         </div>
 
-        {{-- Sticky Milestone Navigation Scrubber --}}
-        <div id="methodology-sticky-tracker" class="sticky top-20 lg:top-24 z-30 bg-[#F7F5F0]/95 backdrop-blur-md py-3 px-4 sm:px-6 hairline-all mb-10 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xs transition-all duration-300">
-            {{-- Horizontal Milestone Chips --}}
-            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full md:w-auto py-1">
-                @foreach($processSteps as $index => $step)
-                    <button type="button" 
-                            data-stack-target="{{ $index }}"
-                            class="methodology-tracker-chip group flex items-center gap-1.5 px-3 py-1.5 text-left transition-all duration-200 cursor-pointer whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.08em] border {{ $index === 0 ? 'bg-[#1E211F] text-white border-[#1E211F] shadow-xs' : 'bg-white text-[#676660] border-black/10 hover:border-[#AD8753]/50 hover:text-[#1E211F]' }}">
-                        <span class="font-bold font-mono {{ $index === 0 ? 'text-[#AD8753]' : 'text-[#AD8753]/80 group-hover:text-[#AD8753]' }}">{{ $step['step'] }}</span>
-                        <span class="hidden sm:inline">{{ explode(' & ', $step['title'])[0] }}</span>
-                    </button>
-                @endforeach
+        {{-- Methodology Stack Wrapper: Confines sticky behavior strictly to the methodology cards --}}
+        <div id="methodology-stack-wrapper" class="relative">
+            {{-- Architectural Milestone Index Ribbon (Slim Sticky Nav) --}}
+            <div id="methodology-sticky-tracker" class="sticky top-14 lg:top-[68px] z-30 bg-[#F7F5F0]/95 backdrop-blur-md py-2.5 px-4 sm:px-6 hairline-b border-black/10 mb-8 lg:mb-12 flex items-center justify-between gap-4">
+                {{-- Horizontal Milestone Chips: All 8 fit gracefully on one line --}}
+                <div class="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar py-0.5 max-w-full">
+                    @foreach($processSteps as $index => $step)
+                        <button type="button" 
+                                data-stack-target="{{ $index }}"
+                                class="methodology-tracker-chip group flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-left transition-all duration-200 cursor-pointer whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.06em] border {{ $index === 0 ? 'bg-[#1E211F] text-white border-[#1E211F] shadow-xs' : 'bg-white/80 text-[#676660] border-black/10 hover:border-[#AD8753]/50 hover:text-[#1E211F]' }}">
+                            <span class="font-bold font-mono {{ $index === 0 ? 'text-[#AD8753]' : 'text-[#AD8753]/80 group-hover:text-[#AD8753]' }}">{{ $step['step'] }}</span>
+                            <span class="hidden md:inline">{{ $step['short_title'] ?? explode(' & ', $step['title'])[0] }}</span>
+                        </button>
+                    @endforeach
+                </div>
+
+                {{-- Live Milestone Counter & Progress Scrubber --}}
+                <div class="flex items-center gap-3 lg:gap-4 shrink-0 text-[11px] text-[#676660]">
+                    <div class="flex items-center gap-2 font-mono text-[11px]">
+                        <span class="text-[#AD8753] font-bold shrink-0" id="methodology-counter">01 / 08</span>
+                        <span class="hidden xl:inline text-[#A1A09A]">•</span>
+                        <span class="hidden xl:inline uppercase tracking-[0.08em] text-[#1E211F] font-sans font-medium max-w-[140px] truncate" id="methodology-phase-label">{{ $processSteps[0]['short_title'] ?? 'Briefing' }}</span>
+                    </div>
+                    <div class="w-20 sm:w-28 lg:w-36 bg-black/10 h-[3px] rounded-full overflow-hidden shrink-0">
+                        <div id="methodology-progress-bar" class="bg-[#AD8753] h-full w-[12.5%] transition-all duration-300"></div>
+                    </div>
+                </div>
             </div>
 
-            {{-- Live Milestone Counter & Progress Scrubber --}}
-            <div class="flex items-center justify-between w-full md:w-auto gap-4 shrink-0 text-[11px] text-[#676660]">
-                <div class="flex items-center gap-2 font-mono text-[11px]">
-                    <span class="text-[#AD8753] font-bold" id="methodology-counter">Phase 01 / 08</span>
-                    <span class="hidden lg:inline text-[#A1A09A]">•</span>
-                    <span class="hidden lg:inline uppercase tracking-[0.10em] text-[#1E211F] font-sans font-medium" id="methodology-phase-label">{{ explode(' & ', $processSteps[0]['title'])[0] }}</span>
-                </div>
-                <div class="w-32 sm:w-40 bg-black/10 h-[3px] rounded-full overflow-hidden">
-                    <div id="methodology-progress-bar" class="bg-[#AD8753] h-full w-[12.5%] transition-all duration-300"></div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Scroll-Driven Sticky Stack Cards Container --}}
-        <div id="methodology-stack-container" class="relative space-y-12 lg:space-y-16 pb-20">
+            {{-- Scroll-Driven Sticky Stack Cards Container --}}
+            <div id="methodology-stack-container" class="relative">
             @foreach($processSteps as $index => $step)
                 <article id="methodology-card-{{ $index }}" 
                          data-stack-card="{{ $index }}"
-                         style="--stack-index: {{ $index }};"
-                         class="methodology-stack-card bg-white hairline-all p-6 lg:p-12 transition-all duration-500 {{ $index === 0 ? 'is-focused' : '' }}">
+                         style="--stack-index: {{ $index }}; z-index: {{ $index + 1 }};"
+                         class="methodology-stack-card bg-white hairline-all p-6 sm:p-8 lg:p-10 transition-all duration-500 {{ $index === 0 ? 'is-focused' : '' }}">
                     
                     {{-- Inner Card Grid --}}
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
                         {{-- Left Column: Architectural Milestone Editorial Content --}}
-                        <div class="lg:col-span-6 flex flex-col justify-between space-y-6">
+                        <div class="lg:col-span-6 flex flex-col justify-between space-y-5">
                             <div>
-                                <div class="flex items-center justify-between gap-4 mb-3">
-                                    <span class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold">
+                                <div class="flex items-center justify-between gap-4 mb-2.5">
+                                    <span class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#AD8753] font-semibold">
                                         <span>Phase {{ $step['step'] }} of 08</span>
                                         <span>•</span>
                                         <span>{{ $step['duration'] }}</span>
                                     </span>
-                                    <span class="text-[11px] uppercase tracking-[0.16em] text-[#676660]">
+                                    <span class="text-[11px] uppercase tracking-[0.14em] text-[#676660]">
                                         {{ $step['bengali_title'] }}
                                     </span>
                                 </div>
 
-                                <h3 class="font-serif text-3xl sm:text-4xl text-[#1E211F] font-normal tracking-[-0.02em] leading-tight">
+                                <h3 class="font-serif text-2xl sm:text-3xl text-[#1E211F] font-normal tracking-[-0.02em] leading-snug">
                                     {{ $step['title'] }}
                                 </h3>
 
-                                <p class="mt-4 text-[15px] leading-relaxed text-[#676660] font-light">
+                                <p class="mt-3 text-[14px] lg:text-[15px] leading-relaxed text-[#676660] font-light">
                                     {{ $step['description'] }}
                                 </p>
 
                                 {{-- Scope & Deliverables Checklist --}}
-                                <div class="mt-6 pt-6 border-t border-black/10">
-                                    <h4 class="text-[11px] uppercase tracking-[0.18em] text-[#AD8753] font-semibold mb-3">
+                                <div class="mt-5 pt-5 border-t border-black/10">
+                                    <h4 class="text-[10px] uppercase tracking-[0.18em] text-[#AD8753] font-semibold mb-2.5">
                                         Milestone Deliverables:
                                     </h4>
-                                    <ul class="space-y-2.5 text-[13px] text-[#1E211F]">
+                                    <ul class="space-y-2 text-[13px] text-[#1E211F]">
                                         @foreach($step['details'] as $detail)
                                             <li class="flex items-start gap-2.5">
-                                                <span class="text-[#AD8753] mt-0.5 font-bold">✦</span>
+                                                <span class="text-[#AD8753] mt-0.5 font-bold text-[11px]">✦</span>
                                                 <span class="font-normal">{{ $detail }}</span>
                                             </li>
                                         @endforeach
@@ -369,9 +371,9 @@
                                 </div>
                             </div>
 
-                            <div class="pt-4 flex items-center gap-4">
+                            <div class="pt-2 flex items-center gap-4">
                                 <a href="{{ route('contact') }}?subject={{ urlencode('Inquiry for Phase ' . $step['step'] . ': ' . $step['title']) }}" 
-                                   class="px-6 py-3.5 bg-[#1E211F] text-[#F7F5F0] hover:bg-[#AD8753] text-[11px] uppercase tracking-[0.18em] font-medium transition-colors inline-flex items-center gap-2">
+                                   class="px-5 py-3 bg-[#1E211F] text-[#F7F5F0] hover:bg-[#AD8753] text-[11px] uppercase tracking-[0.16em] font-medium transition-colors inline-flex items-center gap-2">
                                     <span>Discuss Phase {{ $step['step'] }}</span>
                                     <span>→</span>
                                 </a>
@@ -383,7 +385,7 @@
 
                         {{-- Right Column: Architectural Photography Stage --}}
                         <div class="lg:col-span-6">
-                            <div class="relative aspect-[4/3] w-full overflow-hidden bg-[#EFEAE2] hairline-all shadow-md group">
+                            <div class="relative aspect-[16/10] sm:aspect-[4/3] max-h-[340px] lg:max-h-[380px] w-full overflow-hidden bg-[#EFEAE2] hairline-all shadow-sm group">
                                 <img src="{{ $step['image'] }}" 
                                      alt="{{ $step['title'] }} - Champion Interior Design Methodology" 
                                      loading="lazy" 
@@ -394,7 +396,7 @@
 
                                 {{-- Floating Glass Status Pills on Image --}}
                                 <div class="absolute top-4 left-4 z-10 pointer-events-none">
-                                    <span class="glass-pill px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-[#1E211F] font-semibold">
+                                    <span class="glass-pill px-3 py-1.5 text-[10px] uppercase tracking-[0.16em] text-[#1E211F] font-semibold">
                                         Milestone {{ $step['step'] }}
                                     </span>
                                 </div>
@@ -409,6 +411,7 @@
                     </div>
                 </article>
             @endforeach
+        </div>
         </div>
     </section>
 

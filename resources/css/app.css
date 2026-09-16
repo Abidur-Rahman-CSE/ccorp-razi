@@ -231,9 +231,7 @@ html.lenis body {
     transition:
         transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
         background-color 0.4s ease,
-        box-shadow 0.4s ease,
-        height 0.4s ease,
-        padding 0.4s ease;
+        box-shadow 0.4s ease;
 }
 
 #primary-nav.nav-scrolled {
@@ -245,6 +243,23 @@ html.lenis body {
 
 #primary-nav.nav-hidden {
     transform: translateY(-100%);
+}
+
+/* Micro Architectural Top Bar: Only visible at screen top (scrollY <= 15) */
+#top-bar-dark {
+    max-height: 44px;
+    opacity: 1;
+    transition:
+        max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 0.25s ease,
+        border-width 0.35s ease;
+}
+
+#primary-nav.top-bar-hidden #top-bar-dark {
+    max-height: 0 !important;
+    opacity: 0 !important;
+    border-bottom-width: 0 !important;
+    pointer-events: none;
 }
 
 /* Text Mask Reveal (Progressive Enhancement) */
@@ -414,8 +429,6 @@ html.motion-ready .reveal-card.is-revealed {
 
 /* Scroll-Driven Animated Methodology Stack */
 .methodology-stack-card {
-    position: sticky;
-    top: calc(108px + (var(--stack-index, 0) * 12px));
     border-top: 2px solid rgba(173, 135, 83, 0.45);
     box-shadow:
         0 -12px 30px -8px rgba(0, 0, 0, 0.07),
@@ -429,26 +442,75 @@ html.motion-ready .reveal-card.is-revealed {
         box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.methodology-stack-card.is-stacked-behind {
-    transform: scale(0.975);
-    opacity: 0.55;
-    filter: blur(0.5px);
-    pointer-events: none;
-}
-
-.methodology-stack-card.is-focused {
-    transform: scale(1);
-    opacity: 1;
-    filter: none;
-    box-shadow:
-        0 -14px 36px -8px rgba(173, 135, 83, 0.18),
-        0 28px 56px -12px rgba(30, 33, 31, 0.12);
-    pointer-events: auto;
-}
-
-@media (max-width: 768px) {
+/* Mobile & Tablet: Clean sequential layout with generous breathing room (prevents card collision) */
+@media (max-width: 1023px) {
     .methodology-stack-card {
-        top: calc(72px + (var(--stack-index, 0) * 8px));
+        position: relative !important;
+        top: auto !important;
+        margin-bottom: 2.5rem !important;
+        scroll-margin-top: 130px;
+        transform: none !important;
+        opacity: 1 !important;
+        filter: none !important;
+    }
+}
+
+/* Desktop: Sophisticated Sticky Card Stacking with true depth-of-field */
+@media (min-width: 1024px) {
+    #methodology-stack-container {
+        padding-bottom: 120vh;
+    }
+
+    .methodology-stack-card {
+        position: sticky;
+        top: calc(128px + (var(--stack-index, 0) * 4px));
+        margin-bottom: 24vh;
+    }
+
+    .methodology-stack-card:last-child {
+        margin-bottom: 0;
+    }
+
+    .methodology-stack-card.is-stacked-behind {
+        transform: scale(0.97) translateY(-6px);
+        opacity: 0.35;
+        filter: blur(1px);
+        pointer-events: none;
+    }
+
+    .methodology-stack-card.is-focused {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+        filter: none;
+        box-shadow:
+            0 -16px 40px -10px rgba(173, 135, 83, 0.22),
+            0 32px 64px -16px rgba(30, 33, 31, 0.14);
+        pointer-events: auto;
+    }
+}
+
+/* Sticky Architectural Milestone Tracker Ribbon */
+#methodology-sticky-tracker {
+    position: sticky;
+    top: 68px;
+    z-index: 30;
+    transition:
+        top 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 0.25s ease,
+        box-shadow 0.25s ease;
+    box-shadow: 0 4px 20px -6px rgba(30, 33, 31, 0.05);
+}
+
+html.nav-is-hidden #methodology-sticky-tracker {
+    top: 0px !important;
+}
+
+@media (max-width: 1023px) {
+    #methodology-sticky-tracker {
+        top: 56px;
+    }
+    html.nav-is-hidden #methodology-sticky-tracker {
+        top: 0px !important;
     }
 }
 
