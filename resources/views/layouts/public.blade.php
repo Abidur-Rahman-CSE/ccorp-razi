@@ -32,9 +32,11 @@
     <meta name="ICBM" content="23.7925, 90.4078">
 
     {{-- Favicons --}}
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="icon" href="{{ asset('images/brand/champion-favicon-black.svg') }}" type="image/svg+xml" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="{{ asset('images/brand/champion-favicon-white.svg') }}" type="image/svg+xml" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="{{ asset('images/brand/champion-favicon-black.ico') }}" sizes="any">
+    <link rel="shortcut icon" href="{{ asset('images/brand/champion-favicon-black.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
 
     {{-- Font Preconnect & Stylesheets --}}
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>

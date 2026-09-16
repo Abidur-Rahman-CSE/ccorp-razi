@@ -25,13 +25,18 @@
     <nav class="glass-nav px-6 lg:px-12 py-4 transition-all duration-300" aria-label="Main Navigation">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             {{-- Brand Logo --}}
-            <a href="{{ route('home') }}" class="group flex flex-col focus:outline-none focus:ring-1 focus:ring-[#AD8753]">
-                <span class="font-serif text-2xl lg:text-3xl tracking-[-0.02em] text-[#1E211F] group-hover:text-[#AD8753] transition-colors font-medium">
-                    CHAMPION
-                </span>
-                <span class="text-[9px] uppercase tracking-[0.22em] text-[#676660] font-sans -mt-1 font-semibold">
-                    Interior Design • Dhaka Atelier
-                </span>
+            <a href="{{ route('home') }}" class="group flex items-center gap-3 focus:outline-none focus:ring-1 focus:ring-[#AD8753]" aria-label="Champion Interior Design Home">
+                <img src="{{ asset('images/brand/champion-corporation-black.svg') }}" 
+                     alt="Champion Corporation" 
+                     class="h-10 lg:h-12 w-auto object-contain transition-transform duration-200 group-hover:scale-[1.02]" />
+                <div class="hidden sm:flex flex-col border-l border-black/15 pl-3 py-0.5">
+                    <span class="font-serif text-[13px] lg:text-[14px] tracking-[0.04em] text-[#1E211F] font-semibold uppercase leading-tight">
+                        Interior Design
+                    </span>
+                    <span class="text-[9px] uppercase tracking-[0.20em] text-[#676660] font-sans font-medium">
+                        Dhaka Atelier
+                    </span>
+                </div>
             </a>
 
             {{-- Desktop Navigation Links --}}
@@ -113,10 +118,19 @@
          inert>
         {{-- Drawer Header with Brand and Close Button --}}
         <div class="flex items-center justify-between pb-6 hairline-b border-black/10">
-            <div class="flex flex-col">
-                <span class="font-serif text-2xl tracking-[-0.02em] text-[#1E211F] font-medium">CHAMPION</span>
-                <span class="text-[9px] uppercase tracking-[0.22em] text-[#676660] font-sans -mt-0.5 font-semibold">Interior Design • Dhaka</span>
-            </div>
+            <a href="{{ route('home') }}" class="flex items-center gap-3" aria-label="Champion Interior Design Home">
+                <img src="{{ asset('images/brand/champion-corporation-black.svg') }}" 
+                     alt="Champion Corporation" 
+                     class="h-9 w-auto object-contain" />
+                <div class="flex flex-col border-l border-black/15 pl-2.5 py-0.5">
+                    <span class="font-serif text-[12px] tracking-[0.04em] text-[#1E211F] font-semibold uppercase leading-tight">
+                        Interior Design
+                    </span>
+                    <span class="text-[8px] uppercase tracking-[0.18em] text-[#676660] font-sans font-medium">
+                        Dhaka Atelier
+                    </span>
+                </div>
+            </a>
             <button type="button" 
                     id="mobile-drawer-close"
                     class="p-2 text-[#1E211F] hover:text-[#AD8753] focus:outline-none focus:ring-1 focus:ring-[#AD8753]"

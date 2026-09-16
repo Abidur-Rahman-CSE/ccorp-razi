@@ -15,6 +15,8 @@
         '@id' => url('/') . '#organization',
         'name' => 'Champion Interior Design',
         'alternateName' => 'Champion Interior & Exterior Design',
+        'logo' => asset('images/brand/champion-corporation-black.svg'),
+        'image' => asset('images/brand/champion-corporation-black.svg'),
         'description' => 'Premium turnkey interior design, architecture, renovation and bespoke spatial execution studio in Dhaka, Bangladesh.',
         'url' => url('/'),
         'telephone' => '+8801715394444',

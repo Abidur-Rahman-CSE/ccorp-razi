@@ -3,11 +3,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 pb-16 hairline-b border-white/10">
             {{-- Col 1: Studio Brand --}}
             <div class="lg:col-span-2 pr-0 lg:pr-8">
-                <a href="{{ route('home') }}" class="inline-block mb-4">
-                    <span class="font-serif text-3xl tracking-[-0.02em] text-[#F7F5F0] font-medium block">
-                        CHAMPION
-                    </span>
-                    <span class="text-[10px] uppercase tracking-[0.22em] text-[#AD8753] block -mt-1 font-semibold">
+                <a href="{{ route('home') }}" class="inline-block mb-4 group" aria-label="Champion Interior Design Home">
+                    <img src="{{ asset('images/brand/champion-corporation-dark-mode.svg') }}" 
+                         alt="Champion Corporation" 
+                         class="h-11 md:h-12 w-auto object-contain mb-3 transition-opacity duration-200 group-hover:opacity-90" />
+                    <span class="text-[10px] uppercase tracking-[0.22em] text-[#AD8753] block font-semibold">
                         Interior Design • Architecture • Turnkey Atelier
                     </span>
                 </a>
