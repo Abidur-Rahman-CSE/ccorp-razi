@@ -51,7 +51,7 @@
             </span>
             <a href="{{ route('projects.show', $project['slug']) }}" 
                class="inline-flex items-center gap-1.5 text-[#1E211F] group-hover:text-[#AD8753] font-medium uppercase tracking-[0.14em] transition-colors">
-                <span>View Dossier</span>
+                <span>View Project</span>
                 <span>→</span>
             </a>
         </div>

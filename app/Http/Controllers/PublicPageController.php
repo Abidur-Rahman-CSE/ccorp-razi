@@ -7,8 +7,12 @@ use App\Data\InsightData;
 use App\Data\ProcessData;
 use App\Data\ProjectData;
 use App\Data\ServiceData;
+use App\Mail\NewInquiryReceived;
+use App\Models\Inquiry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class PublicPageController extends Controller
@@ -150,15 +154,52 @@ class PublicPageController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:120',
             'phone' => 'required|string|max:30',
-            'email' => 'nullable|email|max:120',
             'project_type' => 'nullable|string|max:80',
-            'location' => 'nullable|string|max:80',
-            'approx_area' => 'nullable|string|max:50',
             'message' => 'required|string|max:2000',
         ]);
 
-        // In production, dispatch notification email or CRM webhook.
-        return back()->with('success', 'Thank you, '.$validated['name'].'. Your project inquiry has been received. Founder Mushfiqur Rahman Razi and our studio team will contact you within 24 hours.');
+        try {
+            $inquiry = Inquiry::create([
+                'name' => $validated['name'],
+                'phone' => $validated['phone'],
+                'project_type' => $validated['project_type'] ?? null,
+                'message' => $validated['message'],
+                'status' => 'new',
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Inquiry persistence failed: '.$e->getMessage(), [
+                'exception' => $e,
+                'payload' => $request->except(['_token', 'company_trap']),
+            ]);
+
+            return back()
+                ->withInput()
+                ->withErrors(['inquiry' => 'We could not save your inquiry at this moment. Please try again or call us directly at 01715394444.']);
+        }
+
+        // Notify studio through configured channel (fallback logging if mail fails or log driver active)
+        try {
+            Mail::to(config('mail.from.address', 'chmpnidesign@gmail.com'))
+                ->send(new NewInquiryReceived($inquiry));
+
+            $inquiry->update([
+                'status' => 'received',
+                'notified_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('Studio inquiry notification failed: '.$e->getMessage(), [
+                'inquiry_id' => $inquiry->id,
+                'exception' => $e,
+            ]);
+
+            $inquiry->update([
+                'notification_error' => $e->getMessage(),
+            ]);
+        }
+
+        return back()->with('success', 'Thank you, '.$validated['name'].'. Your project inquiry has been received. Our studio team will review your project details and contact you.');
     }
 
     public function insightsIndex(): View

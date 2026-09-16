@@ -228,7 +228,7 @@ class ServiceData
                     'Material Weather-Resistance Certification',
                 ],
                 'image' => '/images/showcase/service_exterior_facade.jpg',
-                'featured' => false,
+                'featured' => true,
                 'meta_title' => 'Exterior Façade & Architectural Design Dhaka | Champion Interior Design',
                 'meta_description' => 'Bespoke exterior façade design, modern cladding, and architectural development in Bangladesh by Champion Interior Design.',
             ],

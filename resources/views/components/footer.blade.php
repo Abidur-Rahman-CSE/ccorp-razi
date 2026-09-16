@@ -46,13 +46,13 @@
             {{-- Col 3: Selected Projects --}}
             <div>
                 <h3 class="text-[11px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold mb-5">
-                    Portfolio Dossier
+                    Selected Projects
                 </h3>
                 <ul class="space-y-3 text-[13px] text-[#A1A09A]">
                     <li><a href="{{ route('projects.show', 'gulshan-lakeview-penthouse') }}" class="hover:text-white transition-colors">Gulshan Lakeview Penthouse</a></li>
                     <li><a href="{{ route('projects.show', 'banani-executive-headquarters') }}" class="hover:text-white transition-colors">Banani Executive HQ</a></li>
                     <li><a href="{{ route('projects.show', 'baridhara-diplomatic-residence') }}" class="hover:text-white transition-colors">Baridhara Residence</a></li>
-                    <li><a href="{{ route('projects.index') }}" class="text-[#AD8753] hover:underline inline-flex items-center gap-1 mt-2">View All Works →</a></li>
+                    <li><a href="{{ route('projects.index') }}" class="text-[#AD8753] hover:underline inline-flex items-center gap-1 mt-2">View All Projects →</a></li>
                 </ul>
 
                 <h3 class="text-[11px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold mt-8 mb-3">
@@ -60,14 +60,14 @@
                 </h3>
                 <ul class="space-y-2 text-[13px] text-[#A1A09A]">
                     <li><a href="{{ route('insights.index') }}" class="hover:text-white transition-colors">Design Monograph</a></li>
-                    <li><a href="{{ route('process') }}" class="hover:text-white transition-colors">8-Step Methodology</a></li>
+                    <li><a href="{{ route('process') }}" class="hover:text-white transition-colors">Our Process</a></li>
                 </ul>
             </div>
 
-            {{-- Col 4: Dhaka Atelier Coordinates --}}
+            {{-- Col 4: Dhaka Contact Details --}}
             <div>
                 <h3 class="text-[11px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold mb-5">
-                    Atelier Coordinates
+                    Contact Details
                 </h3>
                 <div class="space-y-3 text-[13px] text-[#A1A09A]">
                     <p class="text-white font-medium">Dhaka, Bangladesh</p>

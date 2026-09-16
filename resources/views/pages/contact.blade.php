@@ -88,10 +88,11 @@
             </div>
 
             {{-- Consultation Form Column --}}
+            {{-- Consultation Form Column --}}
             <div class="lg:col-span-7 bg-white p-8 lg:p-12 hairline-all shadow-sm">
-                <h3 class="font-serif text-2xl lg:text-3xl text-[#1E211F] font-normal mb-2">Project Briefing Dossier</h3>
+                <h3 class="font-serif text-2xl lg:text-3xl text-[#1E211F] font-normal mb-2">Tell Us About Your Project</h3>
                 <p class="text-[13px] text-[#676660] mb-8 font-light">
-                    Submit your spatial requirements. Founder Mushfiqur Rahman Razi and our team will review the brief and contact you within 24 hours.
+                    Submit your project details. Our studio team will review your requirements and contact you via phone or WhatsApp.
                 </p>
 
                 @if(session('success'))
@@ -144,76 +145,37 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div>
-                            <label for="email" class="block text-[11px] uppercase tracking-[0.16em] text-[#676660] mb-2 font-semibold">
-                                Email Address
-                            </label>
-                            <input type="email" 
-                                   id="email" 
-                                   name="email" 
-                                   value="{{ old('email') }}"
-                                   placeholder="name@domain.com"
-                                   class="w-full bg-[#F7F5F0] border border-[#1E211F]/15 text-[#1E211F] px-4 py-3.5 text-[14px] focus:outline-none focus:border-[#AD8753] transition-colors">
-                        </div>
-
-                        <div>
-                            <label for="project_type" class="block text-[11px] uppercase tracking-[0.16em] text-[#676660] mb-2 font-semibold">
-                                Project Classification
-                            </label>
-                            <select id="project_type" 
-                                    name="project_type" 
-                                    class="w-full bg-[#F7F5F0] border border-[#1E211F]/15 text-[#1E211F] px-4 py-3.5 text-[14px] focus:outline-none focus:border-[#AD8753] transition-colors">
-                                <option value="Residential Penthouse / Apartment" {{ old('project_type') === 'Residential Penthouse / Apartment' ? 'selected' : '' }}>Residential Penthouse / Apartment</option>
-                                <option value="Commercial / Office Suite" {{ old('project_type') === 'Commercial / Office Suite' ? 'selected' : '' }}>Commercial / Office Suite</option>
-                                <option value="Restaurant & Café" {{ old('project_type') === 'Restaurant & Café' ? 'selected' : '' }}>Restaurant & Café</option>
-                                <option value="Renovation & Remodeling" {{ old('project_type') === 'Renovation & Remodeling' ? 'selected' : '' }}>Renovation & Remodeling</option>
-                                <option value="Exterior Façade Design" {{ old('project_type') === 'Exterior Façade Design' ? 'selected' : '' }}>Exterior Façade Design</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div>
-                            <label for="location" class="block text-[11px] uppercase tracking-[0.16em] text-[#676660] mb-2 font-semibold">
-                                Location / Area in Dhaka
-                            </label>
-                            <input type="text" 
-                                   id="location" 
-                                   name="location" 
-                                   value="{{ old('location') }}"
-                                   placeholder="e.g. Gulshan, Banani, Baridhara"
-                                   class="w-full bg-[#F7F5F0] border border-[#1E211F]/15 text-[#1E211F] px-4 py-3.5 text-[14px] focus:outline-none focus:border-[#AD8753] transition-colors">
-                        </div>
-
-                        <div>
-                            <label for="approx_area" class="block text-[11px] uppercase tracking-[0.16em] text-[#676660] mb-2 font-semibold">
-                                Approximate Area (sq.ft)
-                            </label>
-                            <input type="text" 
-                                   id="approx_area" 
-                                   name="approx_area" 
-                                   value="{{ old('approx_area') }}"
-                                   placeholder="e.g. 5,000 sq.ft"
-                                   class="w-full bg-[#F7F5F0] border border-[#1E211F]/15 text-[#1E211F] px-4 py-3.5 text-[14px] focus:outline-none focus:border-[#AD8753] transition-colors">
-                        </div>
+                    <div>
+                        <label for="project_type" class="block text-[11px] uppercase tracking-[0.16em] text-[#676660] mb-2 font-semibold">
+                            Project Type <span class="text-[#888] font-normal normal-case">(Optional)</span>
+                        </label>
+                        <select id="project_type" 
+                                name="project_type" 
+                                class="w-full bg-[#F7F5F0] border border-[#1E211F]/15 text-[#1E211F] px-4 py-3.5 text-[14px] focus:outline-none focus:border-[#AD8753] transition-colors">
+                            <option value="">Select project type (Optional)</option>
+                            <option value="Residential Penthouse / Duplex" {{ old('project_type') === 'Residential Penthouse / Duplex' ? 'selected' : '' }}>Residential Penthouse / Duplex</option>
+                            <option value="Commercial / Office Suite" {{ old('project_type') === 'Commercial / Office Suite' ? 'selected' : '' }}>Commercial / Office Suite</option>
+                            <option value="Restaurant & Café" {{ old('project_type') === 'Restaurant & Café' ? 'selected' : '' }}>Restaurant & Café</option>
+                            <option value="Renovation & Remodeling" {{ old('project_type') === 'Renovation & Remodeling' ? 'selected' : '' }}>Renovation & Remodeling</option>
+                            <option value="Exterior Façade Design" {{ old('project_type') === 'Exterior Façade Design' ? 'selected' : '' }}>Exterior Façade Design</option>
+                        </select>
                     </div>
 
                     <div>
                         <label for="message" class="block text-[11px] uppercase tracking-[0.16em] text-[#676660] mb-2 font-semibold">
-                            Project Objectives & Scope <span class="text-[#AD8753]">*</span>
+                            Short Project Message <span class="text-[#AD8753]">*</span>
                         </label>
                         <textarea id="message" 
                                   name="message" 
                                   rows="4" 
                                   required
-                                  placeholder="Describe your design goals, desired completion timeline, or existing site condition..."
+                                  placeholder="Describe your project requirements, space type, location in Dhaka, or timeline..."
                                   class="w-full bg-[#F7F5F0] border border-[#1E211F]/15 text-[#1E211F] p-4 text-[14px] focus:outline-none focus:border-[#AD8753] transition-colors">{{ old('message') }}</textarea>
                     </div>
 
                     <button type="submit" 
                             class="w-full py-4 bg-[#1E211F] text-[#F7F5F0] hover:bg-[#AD8753] text-[12px] uppercase tracking-[0.20em] font-semibold transition-all duration-300">
-                        Submit Consultation Request
+                        Send Project Inquiry
                     </button>
                 </form>
             </div>

@@ -74,15 +74,17 @@ test('contact inquiry handles valid submission and redirects with success', func
     $response = $this->post(route('contact.inquiry'), [
         'name' => 'Dr. Hasan Ahmed',
         'phone' => '01711122334',
-        'email' => 'hasan@example.com',
         'project_type' => 'Residential Penthouse / Duplex',
-        'location' => 'Gulshan II',
-        'approx_area' => '5,500 sq.ft',
         'message' => 'Looking for turnkey spatial planning and interior execution for our upcoming duplex apartment.',
     ]);
 
     $response->assertSessionHas('success')
         ->assertRedirect();
+
+    $this->assertDatabaseHas('inquiries', [
+        'name' => 'Dr. Hasan Ahmed',
+        'phone' => '01711122334',
+    ]);
 });
 
 test('contact inquiry silently ignores bot submissions with honeypot filled', function () {

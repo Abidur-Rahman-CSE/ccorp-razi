@@ -8,7 +8,7 @@
         <link rel="preload" as="image" href="{{ asset('images/showcase/hero_penthouse_dhaka.jpg') }}" fetchpriority="high">
     </x-slot:head>
 
-    {{-- HERO SECTION --}}
+    {{-- 1. HERO SECTION --}}
     <section class="relative min-h-[90vh] lg:min-h-screen flex items-center justify-center px-6 lg:px-12 py-16 lg:py-24 overflow-hidden" aria-label="Introduction">
         {{-- Background Architectural Image with Subtle Gradient Overlay --}}
         <div class="absolute inset-0 z-0">
@@ -29,7 +29,9 @@
                 <div class="inline-flex items-center gap-3 glass-pill px-4 py-1.5 text-[11px] uppercase tracking-[0.22em] text-[#1E211F] font-semibold mb-6">
                     <span class="w-1.5 h-1.5 bg-[#AD8753]"></span>
                     <span>Dhaka, Bangladesh • Turnkey Atelier</span>
-                </div>                {{-- Marquee Headline with Architectural Text Mask Reveal --}}
+                </div>
+
+                {{-- Marquee Headline --}}
                 <h1 class="reveal-text font-serif text-4xl sm:text-6xl lg:text-7xl font-normal tracking-[-0.03em] text-[#1E211F] leading-[1.05] max-w-3xl">
                     <span class="clip-line-wrap"><span class="clip-line">Spaces Designed Around the Way You Live.</span></span>
                 </h1>
@@ -74,23 +76,23 @@
                 </div>
             </div>
 
-            {{-- Floating Architectural Spec Dossier Card --}}
+            {{-- Floating Architectural Spec Card --}}
             <div class="lg:col-span-4 hidden lg:block reveal-card" style="transition-delay: 350ms;">
                 <div class="glass-panel p-6 max-w-sm ml-auto">
                     <div class="flex items-center justify-between text-[10px] uppercase tracking-[0.18em] text-[#AD8753] font-semibold mb-3">
-                        <span>Showcase Dossier</span>
+                        <span>Featured Project</span>
                         <span>2025 Handover</span>
                     </div>
                     <h3 class="font-serif text-xl text-[#1E211F] font-normal leading-snug">
                         Gulshan Lakeview Penthouse
                     </h3>
                     <p class="mt-2 text-[12px] text-[#676660] leading-relaxed">
-                        6,400 sq.ft residential residence featuring honed Italian travertine, smoked oak wall paneling, and acoustic isolation.
+                        6,400 sq.ft residence featuring honed Italian travertine, smoked oak wall paneling, and acoustic isolation.
                     </p>
                     <div class="mt-4 pt-4 hairline-t flex items-center justify-between text-[11px]">
                         <span class="text-[#1E211F] font-medium">Turnkey Execution</span>
                         <a href="{{ route('projects.show', 'gulshan-lakeview-penthouse') }}" class="text-[#AD8753] hover:underline uppercase tracking-[0.14em] font-medium">
-                            Inspect →
+                            View Project →
                         </a>
                     </div>
                 </div>
@@ -98,33 +100,31 @@
         </div>
     </section>
 
-    {{-- CREDIBILITY / DISCIPLINE STRIP --}}
-    <section class="bg-[#1E211F] text-[#F7F5F0] py-6 px-6 lg:px-12 hairline-b border-black/40 overflow-hidden" aria-label="Credibility Highlights">
-        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-6 text-[12px] uppercase tracking-[0.18em]">
-            <div class="flex items-center gap-3">
-                <span class="text-[#AD8753]">✦</span>
-                <span>Turnkey Execution</span>
+    {{-- 2. THREE FEATURED PROJECTS --}}
+    <section class="py-24 lg:py-32 px-6 lg:px-12 bg-[#EFEAE2]/40 hairline-t hairline-b" id="projects">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+                <x-section-heading 
+                    eyebrow="Selected Works"
+                    title="Spaces That Speak With Quiet Authority"
+                    description="A curated look inside completed residences and corporate headquarters in Gulshan, Banani, and Baridhara."
+                />
+                <a href="{{ route('projects.index') }}" 
+                   class="inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.16em] font-medium text-[#1E211F] hover:text-[#AD8753] transition-colors pb-2 hairline-b border-[#1E211F]">
+                    <span>View All Projects</span>
+                    <span>→</span>
+                </a>
             </div>
-            <div class="flex items-center gap-3">
-                <span class="text-[#AD8753]">✦</span>
-                <span>Residential Interiors</span>
-            </div>
-            <div class="flex items-center gap-3">
-                <span class="text-[#AD8753]">✦</span>
-                <span>Commercial & Boardrooms</span>
-            </div>
-            <div class="flex items-center gap-3">
-                <span class="text-[#AD8753]">✦</span>
-                <span>Photorealistic 3D Planning</span>
-            </div>
-            <div class="flex items-center gap-3">
-                <span class="text-[#AD8753]">✦</span>
-                <span>Architectural Façade</span>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                @foreach($featuredProjects as $project)
+                    <x-project-card :project="$project" />
+                @endforeach
             </div>
         </div>
     </section>
 
-    {{-- SIGNATURE SERVICES SECTION --}}
+    {{-- 3. CONCISE SERVICES OVERVIEW --}}
     <section class="py-24 lg:py-32 px-6 lg:px-12 max-w-7xl mx-auto" id="services">
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
             <x-section-heading 
@@ -139,284 +139,108 @@
             </a>
         </div>
 
-        {{-- Interactive Category Filter Tabs --}}
-        <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-10 text-[12px] uppercase tracking-[0.16em] relative border-b border-black/10">
+        {{-- Interactive Category Filter Tabs (WAI-ARIA Tablist) --}}
+        <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-10 text-[12px] uppercase tracking-[0.16em] relative border-b border-black/10" role="tablist" aria-label="Service Categories">
             <div id="service-tab-indicator" class="absolute bottom-0 h-[2px] bg-[#AD8753] transition-all duration-300 pointer-events-none"></div>
-            <button type="button" data-service-tab="all" class="px-4 py-2 font-medium active-tab text-charcoal transition-colors cursor-pointer">All Practices</button>
-            <button type="button" data-service-tab="residential" class="px-4 py-2 font-medium text-charcoal-muted hover:text-charcoal transition-colors cursor-pointer">Residential</button>
-            <button type="button" data-service-tab="commercial" class="px-4 py-2 font-medium text-charcoal-muted hover:text-charcoal transition-colors cursor-pointer">Commercial</button>
-            <button type="button" data-service-tab="turnkey" class="px-4 py-2 font-medium text-charcoal-muted hover:text-charcoal transition-colors cursor-pointer">Turnkey</button>
-            <button type="button" data-service-tab="exterior" class="px-4 py-2 font-medium text-charcoal-muted hover:text-charcoal transition-colors cursor-pointer">Façade</button>
+            <button type="button" role="tab" id="tab-all" aria-controls="services-grid" aria-selected="true" tabindex="0" data-service-tab="all" class="px-4 py-2 font-medium active-tab text-charcoal transition-colors cursor-pointer">All Practices</button>
+            <button type="button" role="tab" id="tab-residential" aria-controls="services-grid" aria-selected="false" tabindex="-1" data-service-tab="residential" class="px-4 py-2 font-medium text-charcoal-muted hover:text-charcoal transition-colors cursor-pointer">Residential</button>
+            <button type="button" role="tab" id="tab-commercial" aria-controls="services-grid" aria-selected="false" tabindex="-1" data-service-tab="commercial" class="px-4 py-2 font-medium text-charcoal-muted hover:text-charcoal transition-colors cursor-pointer">Commercial</button>
+            <button type="button" role="tab" id="tab-turnkey" aria-controls="services-grid" aria-selected="false" tabindex="-1" data-service-tab="turnkey" class="px-4 py-2 font-medium text-charcoal-muted hover:text-charcoal transition-colors cursor-pointer">Turnkey</button>
+            <button type="button" role="tab" id="tab-exterior" aria-controls="services-grid" aria-selected="false" tabindex="-1" data-service-tab="exterior" class="px-4 py-2 font-medium text-charcoal-muted hover:text-charcoal transition-colors cursor-pointer">Façade</button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div id="services-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($signatureServices as $service)
                 <x-service-card :service="$service" />
             @endforeach
         </div>
     </section>
 
-    {{-- FEATURED PROJECTS PORTFOLIO --}}
-    <section class="py-24 lg:py-32 px-6 lg:px-12 bg-[#EFEAE2]/40 hairline-t hairline-b" id="projects">
+    {{-- 4. SHORT PROCESS OVERVIEW LINKING TO FULL PROCESS PAGE --}}
+    <section class="py-24 lg:py-32 px-6 lg:px-12 bg-[#EFEAE2]/30 hairline-t hairline-b" id="process">
         <div class="max-w-7xl mx-auto">
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
                 <x-section-heading 
-                    eyebrow="Selected Works"
-                    title="Spaces That Speak With Quiet Authority"
-                    description="A curated look inside completed residences and corporate headquarters in Gulshan, Banani, and Baridhara."
+                    eyebrow="Our Process"
+                    title="From Initial Brief to Handover"
+                    description="A disciplined, transparent workflow structured into predictable architectural milestones."
                 />
-                <a href="{{ route('projects.index') }}" 
-                   class="inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.16em] font-medium text-[#1E211F] hover:text-[#AD8753] transition-colors pb-2 hairline-b border-[#1E211F]">
-                    <span>View All Dossiers</span>
-                    <span>→</span>
-                </a>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                @foreach($featuredProjects as $project)
-                    <x-project-card :project="$project" />
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    {{-- INTERACTIVE BEFORE / AFTER TRANSFORMATION ISLAND --}}
-    <section class="py-24 lg:py-32 px-6 lg:px-12 max-w-7xl mx-auto" id="transformation">
-        <div class="max-w-3xl mb-12">
-            <span class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-[#AD8753] font-semibold mb-3">
-                <span class="w-1.5 h-1.5 bg-[#AD8753]"></span>
-                Execution Reality
-            </span>
-            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal tracking-[-0.02em] text-[#1E211F] leading-[1.12]">
-                From Raw Concrete to Finished Sanctuary
-            </h2>
-            <p class="mt-4 text-[15px] sm:text-base leading-relaxed text-[#676660] font-light">
-                Drag the interactive slider to inspect our spatial transformation. We turn unfinished bare shells into warm, acoustically calibrated environments with custom millwork and lighting.
-            </p>
-        </div>
-
-        {{-- Progressive React Island with Complete Server-Rendered HTML Fallback --}}
-        <div id="before-after-island"
-             data-before="{{ asset('images/showcase/before_renovation.jpg') }}"
-             data-after="{{ asset('images/showcase/after_renovation.jpg') }}"
-             data-label-before="Before • Bare Concrete Shell"
-             data-label-after="After • Finished Penthouse Sanctuary"
-             class="w-full">
-            {{-- Pure HTML Fallback (Visible when JavaScript is disabled or before hydration) --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="relative bg-[#EFEAE2] overflow-hidden hairline-all">
-                    <img src="{{ asset('images/showcase/before_renovation.jpg') }}" 
-                         alt="Before renovation: bare unfinished concrete apartment shell in Dhaka"
-                         loading="lazy" 
-                         width="800" 
-                         height="450" 
-                         class="w-full aspect-[16/9] object-cover">
-                    <div class="p-4 bg-white">
-                        <span class="text-[11px] uppercase tracking-[0.16em] text-[#676660] font-semibold block">Before Renovation</span>
-                        <p class="text-[13px] text-[#1E211F] mt-1">Raw structural shell, exposed conduit, bare concrete surfaces.</p>
-                    </div>
-                </div>
-                <div class="relative bg-[#EFEAE2] overflow-hidden hairline-all">
-                    <img src="{{ asset('images/showcase/after_renovation.jpg') }}" 
-                         alt="After renovation: warm luxury penthouse living room with fluted oak and limestone"
-                         loading="lazy" 
-                         width="800" 
-                         height="450" 
-                         class="w-full aspect-[16/9] object-cover">
-                    <div class="p-4 bg-white">
-                        <span class="text-[11px] uppercase tracking-[0.16em] text-[#AD8753] font-semibold block">After Execution</span>
-                        <p class="text-[13px] text-[#1E211F] mt-1">Honed limestone floors, fluted oak joinery, architectural cove lighting.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- WHY CHAMPION / ARCHITECTURAL TENETS --}}
-    <section class="py-24 lg:py-32 px-6 lg:px-12 bg-[#1E211F] text-[#F7F5F0]" id="why-champion">
-        <div class="max-w-7xl mx-auto">
-            <x-section-heading 
-                eyebrow="Our Principles"
-                title="Craftsmanship Without Compromise"
-                description="We avoid the fragmentation that plagues typical construction. Here is how we guarantee architectural excellence."
-            />
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="p-8 bg-white/5 hairline-all border-white/10 hover:border-[#AD8753] transition-colors">
-                    <div class="text-[#AD8753] font-serif text-3xl font-light mb-4">01</div>
-                    <h3 class="font-serif text-xl text-white mb-3">Smart Spatial Planning</h3>
-                    <p class="text-[13px] text-[#A1A09A] leading-relaxed">
-                        Every layout is engineered around traffic flow, natural illumination, and functional storage, ensuring spaces feel calm and uncluttered.
-                    </p>
-                </div>
-
-                <div class="p-8 bg-white/5 hairline-all border-white/10 hover:border-[#AD8753] transition-colors">
-                    <div class="text-[#AD8753] font-serif text-3xl font-light mb-4">02</div>
-                    <h3 class="font-serif text-xl text-white mb-3">Quality Craftsmanship</h3>
-                    <p class="text-[13px] text-[#A1A09A] leading-relaxed">
-                        Our master carpenters and trades work directly with vetted hardwoods, Italian marble, and European hardware under rigorous tolerance checks.
-                    </p>
-                </div>
-
-                <div class="p-8 bg-white/5 hairline-all border-white/10 hover:border-[#AD8753] transition-colors">
-                    <div class="text-[#AD8753] font-serif text-3xl font-light mb-4">03</div>
-                    <h3 class="font-serif text-xl text-white mb-3">Committed Deadlines</h3>
-                    <p class="text-[13px] text-[#A1A09A] leading-relaxed">
-                        We respect our clients' time. Turnkey contracts feature disciplined phased schedules, transparent updates, and firm handover commitments.
-                    </p>
-                </div>
-
-                <div class="p-8 bg-white/5 hairline-all border-white/10 hover:border-[#AD8753] transition-colors">
-                    <div class="text-[#AD8753] font-serif text-3xl font-light mb-4">04</div>
-                    <h3 class="font-serif text-xl text-white mb-3">Single-Point Accountability</h3>
-                    <p class="text-[13px] text-[#A1A09A] leading-relaxed">
-                        No passing blame between designers and external builders. From 3D conception to the final key turn, Champion owns the entire result.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- 8-STEP ARCHITECTURAL PROCESS & SCROLL-DRIVEN STACKED DOSSIERS --}}
-    <section class="pt-24 lg:pt-32 pb-12 lg:pb-16 px-6 lg:px-12 max-w-7xl mx-auto" id="process">
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-            <x-section-heading 
-                eyebrow="Methodology"
-                title="The Journey from Brief to Handover"
-                description="A disciplined, transparent workflow structured into predictable architectural milestones."
-            />
-            <div class="flex items-center gap-4 pb-2">
                 <a href="{{ route('process') }}" 
-                   class="inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.16em] font-medium text-[#1E211F] hover:text-[#AD8753] transition-colors hairline-b border-[#1E211F] pb-1">
-                    <span>Inspect Full Methodology</span>
+                   class="inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.16em] font-medium text-[#1E211F] hover:text-[#AD8753] transition-colors pb-2 hairline-b border-[#1E211F]">
+                    <span>Our Process</span>
                     <span>→</span>
                 </a>
             </div>
-        </div>
 
-        {{-- Methodology Stack Wrapper: Confines sticky behavior strictly to the methodology cards --}}
-        <div id="methodology-stack-wrapper" class="relative">
-            {{-- Architectural Milestone Index Ribbon (Slim Sticky Nav) --}}
-            <div id="methodology-sticky-tracker" class="sticky top-14 lg:top-[68px] z-30 bg-[#F7F5F0]/95 backdrop-blur-md py-2.5 px-4 sm:px-6 hairline-b border-black/10 mb-8 lg:mb-12 flex items-center justify-between gap-4">
-                {{-- Horizontal Milestone Chips: All 8 fit gracefully on one line --}}
-                <div class="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar py-0.5 max-w-full">
-                    @foreach($processSteps as $index => $step)
-                        <button type="button" 
-                                data-stack-target="{{ $index }}"
-                                class="methodology-tracker-chip group flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-left transition-all duration-200 cursor-pointer whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.06em] border {{ $index === 0 ? 'bg-[#1E211F] text-white border-[#1E211F] shadow-xs' : 'bg-white/80 text-[#676660] border-black/10 hover:border-[#AD8753]/50 hover:text-[#1E211F]' }}">
-                            <span class="font-bold font-mono {{ $index === 0 ? 'text-[#AD8753]' : 'text-[#AD8753]/80 group-hover:text-[#AD8753]' }}">{{ $step['step'] }}</span>
-                            <span class="hidden md:inline">{{ $step['short_title'] ?? explode(' & ', $step['title'])[0] }}</span>
-                        </button>
-                    @endforeach
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="p-8 bg-white hairline-all flex flex-col justify-between">
+                    <div>
+                        <div class="text-[#AD8753] font-serif text-3xl font-light mb-4">01</div>
+                        <h3 class="font-serif text-xl text-[#1E211F] mb-2 font-medium">Consultation & Survey</h3>
+                        <p class="text-[13px] text-[#676660] leading-relaxed">
+                            Laser site measurements, structural assessment, spatial brief, and budget scoping.
+                        </p>
+                    </div>
+                    <span class="mt-6 pt-4 hairline-t text-[11px] uppercase tracking-[0.14em] text-[#AD8753] font-medium">
+                        Initial Site Phase
+                    </span>
                 </div>
 
-                {{-- Live Milestone Counter & Progress Scrubber --}}
-                <div class="flex items-center gap-3 lg:gap-4 shrink-0 text-[11px] text-[#676660]">
-                    <div class="flex items-center gap-2 font-mono text-[11px]">
-                        <span class="text-[#AD8753] font-bold shrink-0" id="methodology-counter">01 / 08</span>
-                        <span class="hidden xl:inline text-[#A1A09A]">•</span>
-                        <span class="hidden xl:inline uppercase tracking-[0.08em] text-[#1E211F] font-sans font-medium max-w-[140px] truncate" id="methodology-phase-label">{{ $processSteps[0]['short_title'] ?? 'Briefing' }}</span>
+                <div class="p-8 bg-white hairline-all flex flex-col justify-between">
+                    <div>
+                        <div class="text-[#AD8753] font-serif text-3xl font-light mb-4">02</div>
+                        <h3 class="font-serif text-xl text-[#1E211F] mb-2 font-medium">3D Visualization</h3>
+                        <p class="text-[13px] text-[#676660] leading-relaxed">
+                            Photorealistic 3D perspectives, material mood boards, lighting schemes, and MEP layout.
+                        </p>
                     </div>
-                    <div class="w-20 sm:w-28 lg:w-36 bg-black/10 h-[3px] rounded-full overflow-hidden shrink-0">
-                        <div id="methodology-progress-bar" class="bg-[#AD8753] h-full w-[12.5%] transition-all duration-300"></div>
+                    <span class="mt-6 pt-4 hairline-t text-[11px] uppercase tracking-[0.14em] text-[#AD8753] font-medium">
+                        Design Validation
+                    </span>
+                </div>
+
+                <div class="p-8 bg-white hairline-all flex flex-col justify-between">
+                    <div>
+                        <div class="text-[#AD8753] font-serif text-3xl font-light mb-4">03</div>
+                        <h3 class="font-serif text-xl text-[#1E211F] mb-2 font-medium">Turnkey Execution</h3>
+                        <p class="text-[13px] text-[#676660] leading-relaxed">
+                            Bespoke factory millwork, electrical, civil retrofits, and disciplined site supervision.
+                        </p>
                     </div>
+                    <span class="mt-6 pt-4 hairline-t text-[11px] uppercase tracking-[0.14em] text-[#AD8753] font-medium">
+                        Physical Construction
+                    </span>
+                </div>
+
+                <div class="p-8 bg-white hairline-all flex flex-col justify-between">
+                    <div>
+                        <div class="text-[#AD8753] font-serif text-3xl font-light mb-4">04</div>
+                        <h3 class="font-serif text-xl text-[#1E211F] mb-2 font-medium">White-Glove Handover</h3>
+                        <p class="text-[13px] text-[#676660] leading-relaxed">
+                            Multi-point pre-handover quality inspections, deep cleaning, and final key handover.
+                        </p>
+                    </div>
+                    <span class="mt-6 pt-4 hairline-t text-[11px] uppercase tracking-[0.14em] text-[#AD8753] font-medium">
+                        Move-In Ready
+                    </span>
                 </div>
             </div>
 
-            {{-- Scroll-Driven Sticky Stack Cards Container --}}
-            <div id="methodology-stack-container" class="relative">
-            @foreach($processSteps as $index => $step)
-                <article id="methodology-card-{{ $index }}" 
-                         data-stack-card="{{ $index }}"
-                         style="--stack-index: {{ $index }}; z-index: {{ $index + 1 }};"
-                         class="methodology-stack-card bg-white hairline-all p-6 sm:p-8 lg:p-10 transition-all duration-500 {{ $index === 0 ? 'is-focused' : '' }}">
-                    
-                    {{-- Inner Card Grid --}}
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
-                        {{-- Left Column: Architectural Milestone Editorial Content --}}
-                        <div class="lg:col-span-6 flex flex-col justify-between space-y-5">
-                            <div>
-                                <div class="flex items-center justify-between gap-4 mb-2.5">
-                                    <span class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#AD8753] font-semibold">
-                                        <span>Phase {{ $step['step'] }} of 08</span>
-                                        <span>•</span>
-                                        <span>{{ $step['duration'] }}</span>
-                                    </span>
-                                    <span class="text-[11px] uppercase tracking-[0.14em] text-[#676660]">
-                                        {{ $step['bengali_title'] }}
-                                    </span>
-                                </div>
-
-                                <h3 class="font-serif text-2xl sm:text-3xl text-[#1E211F] font-normal tracking-[-0.02em] leading-snug">
-                                    {{ $step['title'] }}
-                                </h3>
-
-                                <p class="mt-3 text-[14px] lg:text-[15px] leading-relaxed text-[#676660] font-light">
-                                    {{ $step['description'] }}
-                                </p>
-
-                                {{-- Scope & Deliverables Checklist --}}
-                                <div class="mt-5 pt-5 border-t border-black/10">
-                                    <h4 class="text-[10px] uppercase tracking-[0.18em] text-[#AD8753] font-semibold mb-2.5">
-                                        Milestone Deliverables:
-                                    </h4>
-                                    <ul class="space-y-2 text-[13px] text-[#1E211F]">
-                                        @foreach($step['details'] as $detail)
-                                            <li class="flex items-start gap-2.5">
-                                                <span class="text-[#AD8753] mt-0.5 font-bold text-[11px]">✦</span>
-                                                <span class="font-normal">{{ $detail }}</span>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="pt-2 flex items-center gap-4">
-                                <a href="{{ route('contact') }}?subject={{ urlencode('Inquiry for Phase ' . $step['step'] . ': ' . $step['title']) }}" 
-                                   class="px-5 py-3 bg-[#1E211F] text-[#F7F5F0] hover:bg-[#AD8753] text-[11px] uppercase tracking-[0.16em] font-medium transition-colors inline-flex items-center gap-2">
-                                    <span>Discuss Phase {{ $step['step'] }}</span>
-                                    <span>→</span>
-                                </a>
-                                <span class="text-[12px] text-[#676660] font-sans hidden sm:inline">
-                                    Single-Point Accountability Guarantee
-                                </span>
-                            </div>
-                        </div>
-
-                        {{-- Right Column: Architectural Photography Stage --}}
-                        <div class="lg:col-span-6">
-                            <div class="relative aspect-[16/10] sm:aspect-[4/3] max-h-[340px] lg:max-h-[380px] w-full overflow-hidden bg-[#EFEAE2] hairline-all shadow-sm group">
-                                <img src="{{ $step['image'] }}" 
-                                     alt="{{ $step['title'] }} - Champion Interior Design Methodology" 
-                                     loading="lazy" 
-                                     width="800" 
-                                     height="600" 
-                                     draggable="false"
-                                     class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03] select-none">
-
-                                {{-- Floating Glass Status Pills on Image --}}
-                                <div class="absolute top-4 left-4 z-10 pointer-events-none">
-                                    <span class="glass-pill px-3 py-1.5 text-[10px] uppercase tracking-[0.16em] text-[#1E211F] font-semibold">
-                                        Milestone {{ $step['step'] }}
-                                    </span>
-                                </div>
-
-                                <div class="absolute bottom-4 right-4 z-10 pointer-events-none">
-                                    <span class="glass-pill px-3 py-1.5 text-[10px] uppercase tracking-[0.16em] text-[#AD8753] font-semibold">
-                                        {{ $step['duration'] }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            @endforeach
-        </div>
+            <div class="p-8 bg-white hairline-all flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div>
+                    <h4 class="font-serif text-lg text-[#1E211F] font-medium">Explore the Full 8-Step Architectural Methodology</h4>
+                    <p class="text-[13px] text-[#676660] mt-1">Read our complete step-by-step workflow including deliverables, timelines, and quality protocols.</p>
+                </div>
+                <a href="{{ route('process') }}" class="px-6 py-3 bg-[#1E211F] text-[#F7F5F0] hover:bg-[#AD8753] text-[11px] uppercase tracking-[0.16em] font-medium transition-colors shrink-0">
+                    Our Process →
+                </a>
+            </div>
         </div>
     </section>
 
-    {{-- FOUNDER & STUDIO LEADERSHIP --}}
-    <section class="py-24 lg:py-32 px-6 lg:px-12 bg-[#EFEAE2]/60 hairline-t hairline-b" id="founder">
+    {{-- 5. STUDIO INFORMATION & TRUST EVIDENCE --}}
+    {{-- A. Founder & Studio Leadership --}}
+    <section class="py-24 lg:py-32 px-6 lg:px-12 bg-white hairline-b" id="founder">
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             {{-- Portrait Column --}}
             <div class="lg:col-span-5">
@@ -452,7 +276,7 @@
                 
                 <div class="mt-6 space-y-4 text-[15px] leading-relaxed text-[#676660] font-light">
                     <p>
-                        Under the leadership of Founder & CEO <strong>Mushfiqur Rahman Razi</strong>, Champion Interior Design has established itself as an uncompromising force in Bangladesh’s spatial design and turnkey execution sector.
+                        Under the leadership of Founder & CEO <strong>Mushfiqur Rahman Razi</strong>, Champion Interior Design provides comprehensive spatial design and turnkey execution across residential and commercial sectors in Bangladesh.
                     </p>
                     <p>
                         With a firm commitment to authentic materiality, precision millwork, and on-time project handover, our studio bridges the divide between conceptual 3D aesthetics and structural on-site delivery across Dhaka's premier neighborhoods.
@@ -486,12 +310,109 @@
         </div>
     </section>
 
-    {{-- FREQUENTLY ASKED QUESTIONS (FAQ) --}}
-    <section class="py-24 lg:py-32 px-6 lg:px-12 max-w-5xl mx-auto" id="faq">
+    {{-- B. Principles --}}
+    <section class="py-24 lg:py-32 px-6 lg:px-12 bg-[#1E211F] text-[#F7F5F0]" id="principles">
+        <div class="max-w-7xl mx-auto">
+            <x-section-heading 
+                eyebrow="Our Principles"
+                title="Craftsmanship Without Compromise"
+                description="We avoid the fragmentation that plagues typical construction. Here is how we deliver architectural excellence."
+            />
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="p-8 bg-white/5 hairline-all border-white/10 hover:border-[#AD8753] transition-colors">
+                    <div class="text-[#AD8753] font-serif text-3xl font-light mb-4">01</div>
+                    <h3 class="font-serif text-xl text-white mb-3 font-normal">Smart Spatial Planning</h3>
+                    <p class="text-[13px] text-[#A1A09A] leading-relaxed">
+                        Every layout is engineered around traffic flow, natural illumination, and functional storage, ensuring spaces feel calm and uncluttered.
+                    </p>
+                </div>
+
+                <div class="p-8 bg-white/5 hairline-all border-white/10 hover:border-[#AD8753] transition-colors">
+                    <div class="text-[#AD8753] font-serif text-3xl font-light mb-4">02</div>
+                    <h3 class="font-serif text-xl text-white mb-3 font-normal">Quality Craftsmanship</h3>
+                    <p class="text-[13px] text-[#A1A09A] leading-relaxed">
+                        Our master carpenters and trades work directly with vetted hardwoods, Italian marble, and European hardware under rigorous tolerance checks.
+                    </p>
+                </div>
+
+                <div class="p-8 bg-white/5 hairline-all border-white/10 hover:border-[#AD8753] transition-colors">
+                    <div class="text-[#AD8753] font-serif text-3xl font-light mb-4">03</div>
+                    <h3 class="font-serif text-xl text-white mb-3 font-normal">Committed Deadlines</h3>
+                    <p class="text-[13px] text-[#A1A09A] leading-relaxed">
+                        We respect our clients' time. Turnkey contracts feature disciplined phased schedules, transparent updates, and firm handover commitments.
+                    </p>
+                </div>
+
+                <div class="p-8 bg-white/5 hairline-all border-white/10 hover:border-[#AD8753] transition-colors">
+                    <div class="text-[#AD8753] font-serif text-3xl font-light mb-4">04</div>
+                    <h3 class="font-serif text-xl text-white mb-3 font-normal">Single Accountability</h3>
+                    <p class="text-[13px] text-[#A1A09A] leading-relaxed">
+                        No passing blame between designers and external builders. From 3D conception to the final key turn, Champion owns the entire result.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- C. Interactive Before / After Transformation Island --}}
+    <section class="py-24 lg:py-32 px-6 lg:px-12 max-w-7xl mx-auto" id="transformation">
+        <div class="max-w-3xl mb-12">
+            <span class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-[#AD8753] font-semibold mb-3">
+                <span class="w-1.5 h-1.5 bg-[#AD8753]"></span>
+                Execution Reality
+            </span>
+            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal tracking-[-0.02em] text-[#1E211F] leading-[1.12]">
+                From Raw Concrete to Finished Sanctuary
+            </h2>
+            <p class="mt-4 text-[15px] sm:text-base leading-relaxed text-[#676660] font-light">
+                Drag the interactive slider to view our spatial transformation. We turn unfinished bare shells into warm, acoustically calibrated environments with custom millwork and lighting.
+            </p>
+        </div>
+
+        {{-- Progressive React Island with Complete Server-Rendered HTML Fallback --}}
+        <div id="before-after-island"
+             data-before="{{ asset('images/showcase/before_renovation.jpg') }}"
+             data-after="{{ asset('images/showcase/after_renovation.jpg') }}"
+             data-label-before="Before • Bare Concrete Shell"
+             data-label-after="After • Finished Penthouse Sanctuary"
+             class="w-full">
+            {{-- Pure HTML Fallback --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="relative bg-[#EFEAE2] overflow-hidden hairline-all">
+                    <img src="{{ asset('images/showcase/before_renovation.jpg') }}" 
+                         alt="Before renovation: bare unfinished concrete apartment shell in Dhaka"
+                         loading="lazy" 
+                         width="800" 
+                         height="450" 
+                         class="w-full aspect-[16/9] object-cover">
+                    <div class="p-4 bg-white">
+                        <span class="text-[11px] uppercase tracking-[0.16em] text-[#676660] font-semibold block">Before Renovation</span>
+                        <p class="text-[13px] text-[#1E211F] mt-1">Raw structural shell, exposed conduit, bare concrete surfaces.</p>
+                    </div>
+                </div>
+                <div class="relative bg-[#EFEAE2] overflow-hidden hairline-all">
+                    <img src="{{ asset('images/showcase/after_renovation.jpg') }}" 
+                         alt="After renovation: warm luxury penthouse living room with fluted oak and limestone"
+                         loading="lazy" 
+                         width="800" 
+                         height="450" 
+                         class="w-full aspect-[16/9] object-cover">
+                    <div class="p-4 bg-white">
+                        <span class="text-[11px] uppercase tracking-[0.16em] text-[#AD8753] font-semibold block">After Execution</span>
+                        <p class="text-[13px] text-[#1E211F] mt-1">Honed limestone floors, fluted oak joinery, architectural cove lighting.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- D. Frequently Asked Questions (FAQ) --}}
+    <section class="py-24 lg:py-32 px-6 lg:px-12 max-w-5xl mx-auto hairline-t" id="faq">
         <x-section-heading 
             eyebrow="Clarity & Answers"
             title="Frequently Asked Questions"
-            description="Clear, factual answers regarding our architectural turnkey workflow, residential and commercial scope, and consultation booking in Dhaka."
+            description="Clear, factual answers regarding our architectural turnkey workflow, residential and commercial scope, and project inquiries in Dhaka."
             align="center"
         />
 
@@ -516,7 +437,7 @@
         </div>
     </section>
 
-    {{-- FINAL CONVERSION & CONSULTATION FORM --}}
+    {{-- 6. SHORT INQUIRY FORM --}}
     <section class="py-24 lg:py-32 px-6 lg:px-12 bg-[#1E211F] text-[#F7F5F0]" id="consultation">
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
             {{-- Contact Information Column --}}
@@ -529,7 +450,7 @@
                     Planning a Space Worth Getting Right?
                 </h2>
                 <p class="mt-6 text-[15px] leading-relaxed text-[#A1A09A] font-light">
-                    Whether commissioning a penthouse interior in Gulshan, an executive office suite in Banani, or a comprehensive building renovation, we invite you to discuss your spatial requirements directly with our team.
+                    Whether commissioning a penthouse interior in Gulshan, an executive office suite in Banani, or a comprehensive building renovation, we invite you to discuss your project details directly with our team.
                 </p>
 
                 <div class="mt-10 space-y-6 text-[14px]">
@@ -553,7 +474,7 @@
                     <div class="flex items-start gap-4">
                         <span class="text-[#AD8753] text-xl">✦</span>
                         <div>
-                            <strong class="text-white block uppercase tracking-[0.14em] text-[11px]">Market Location</strong>
+                            <strong class="text-white block uppercase tracking-[0.14em] text-[11px]">Location</strong>
                             <p class="text-white">Dhaka, Bangladesh</p>
                             <span class="text-[12px] text-[#A1A09A]">Serving Gulshan, Banani, Baridhara, Dhanmondi, Bashundhara, Uttara.</span>
                         </div>
@@ -596,24 +517,24 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
-                            <label for="name" class="block text-[11px] uppercase tracking-[0.16em] text-[#A1A09A] mb-2 font-medium">
+                            <label for="home-name" class="block text-[11px] uppercase tracking-[0.16em] text-[#A1A09A] mb-2 font-medium">
                                 Full Name <span class="text-[#AD8753]">*</span>
                             </label>
                             <input type="text" 
-                                   id="name" 
+                                   id="home-name" 
                                    name="name" 
                                    value="{{ old('name') }}"
                                    required 
-                                   placeholder="e.g. Architect Rahman"
+                                   placeholder="Your name"
                                    class="w-full bg-[#1E211F] border border-white/10 text-white px-4 py-3.5 text-[14px] focus:outline-none focus:border-[#AD8753] transition-colors">
                         </div>
 
                         <div>
-                            <label for="phone" class="block text-[11px] uppercase tracking-[0.16em] text-[#A1A09A] mb-2 font-medium">
+                            <label for="home-phone" class="block text-[11px] uppercase tracking-[0.16em] text-[#A1A09A] mb-2 font-medium">
                                 Phone Number <span class="text-[#AD8753]">*</span>
                             </label>
                             <input type="tel" 
-                                   id="phone" 
+                                   id="home-phone" 
                                    name="phone" 
                                    value="{{ old('phone') }}"
                                    required 
@@ -622,80 +543,41 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div>
-                            <label for="email" class="block text-[11px] uppercase tracking-[0.16em] text-[#A1A09A] mb-2 font-medium">
-                                Email Address
-                            </label>
-                            <input type="email" 
-                                   id="email" 
-                                   name="email" 
-                                   value="{{ old('email') }}"
-                                   placeholder="name@domain.com"
-                                   class="w-full bg-[#1E211F] border border-white/10 text-white px-4 py-3.5 text-[14px] focus:outline-none focus:border-[#AD8753] transition-colors">
-                        </div>
-
-                        <div>
-                            <label for="project_type" class="block text-[11px] uppercase tracking-[0.16em] text-[#A1A09A] mb-2 font-medium">
-                                Project Classification
-                            </label>
-                            <select id="project_type" 
-                                    name="project_type" 
-                                    class="w-full bg-[#1E211F] border border-white/10 text-white px-4 py-3.5 text-[14px] focus:outline-none focus:border-[#AD8753] transition-colors">
-                                <option value="Residential Penthouse / Duplex" {{ old('project_type') === 'Residential Penthouse / Duplex' ? 'selected' : '' }}>Residential Penthouse / Duplex</option>
-                                <option value="Commercial / Office Suite" {{ old('project_type') === 'Commercial / Office Suite' ? 'selected' : '' }}>Commercial / Office Suite</option>
-                                <option value="Restaurant / Hospitality" {{ old('project_type') === 'Restaurant / Hospitality' ? 'selected' : '' }}>Restaurant / Hospitality</option>
-                                <option value="Turnkey Architectural Renovation" {{ old('project_type') === 'Turnkey Architectural Renovation' ? 'selected' : '' }}>Turnkey Architectural Renovation</option>
-                                <option value="Exterior Façade Development" {{ old('project_type') === 'Exterior Façade Development' ? 'selected' : '' }}>Exterior Façade Development</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div>
-                            <label for="location" class="block text-[11px] uppercase tracking-[0.16em] text-[#A1A09A] mb-2 font-medium">
-                                Project Location / Enclave
-                            </label>
-                            <input type="text" 
-                                   id="location" 
-                                   name="location" 
-                                   value="{{ old('location') }}"
-                                   placeholder="e.g. Gulshan II, Banani, Baridhara"
-                                   class="w-full bg-[#1E211F] border border-white/10 text-white px-4 py-3.5 text-[14px] focus:outline-none focus:border-[#AD8753] transition-colors">
-                        </div>
-
-                        <div>
-                            <label for="approx_area" class="block text-[11px] uppercase tracking-[0.16em] text-[#A1A09A] mb-2 font-medium">
-                                Approximate Area (sq.ft)
-                            </label>
-                            <input type="text" 
-                                   id="approx_area" 
-                                   name="approx_area" 
-                                   value="{{ old('approx_area') }}"
-                                   placeholder="e.g. 4,500 sq.ft"
-                                   class="w-full bg-[#1E211F] border border-white/10 text-white px-4 py-3.5 text-[14px] focus:outline-none focus:border-[#AD8753] transition-colors">
-                        </div>
+                    <div>
+                        <label for="home-project-type" class="block text-[11px] uppercase tracking-[0.16em] text-[#A1A09A] mb-2 font-medium">
+                            Project Type <span class="text-[#888] font-normal normal-case">(Optional)</span>
+                        </label>
+                        <select id="home-project-type" 
+                                name="project_type" 
+                                class="w-full bg-[#1E211F] border border-white/10 text-white px-4 py-3.5 text-[14px] focus:outline-none focus:border-[#AD8753] transition-colors">
+                            <option value="">Select project type (Optional)</option>
+                            <option value="Residential Penthouse / Duplex" {{ old('project_type') === 'Residential Penthouse / Duplex' ? 'selected' : '' }}>Residential Penthouse / Duplex</option>
+                            <option value="Commercial / Office Suite" {{ old('project_type') === 'Commercial / Office Suite' ? 'selected' : '' }}>Commercial / Office Suite</option>
+                            <option value="Restaurant & Café" {{ old('project_type') === 'Restaurant & Café' ? 'selected' : '' }}>Restaurant & Café</option>
+                            <option value="Renovation & Remodeling" {{ old('project_type') === 'Renovation & Remodeling' ? 'selected' : '' }}>Renovation & Remodeling</option>
+                            <option value="Exterior Façade Design" {{ old('project_type') === 'Exterior Façade Design' ? 'selected' : '' }}>Exterior Façade Design</option>
+                        </select>
                     </div>
 
                     <div>
-                        <label for="message" class="block text-[11px] uppercase tracking-[0.16em] text-[#A1A09A] mb-2 font-medium">
-                            Project Vision & Notes <span class="text-[#AD8753]">*</span>
+                        <label for="home-message" class="block text-[11px] uppercase tracking-[0.16em] text-[#A1A09A] mb-2 font-medium">
+                            Short Project Message <span class="text-[#AD8753]">*</span>
                         </label>
-                        <textarea id="message" 
+                        <textarea id="home-message" 
                                   name="message" 
                                   rows="4" 
                                   required
-                                  placeholder="Describe your spatial objectives, preferred materials, and anticipated timeline..."
+                                  placeholder="Describe your project requirements, space type, location in Dhaka, or timeline..."
                                   class="w-full bg-[#1E211F] border border-white/10 text-white p-4 text-[14px] focus:outline-none focus:border-[#AD8753] transition-colors">{{ old('message') }}</textarea>
                     </div>
 
                     <button type="submit" 
                             class="w-full py-4 bg-[#AD8753] text-[#1E211F] hover:bg-white text-[12px] uppercase tracking-[0.20em] font-semibold transition-all duration-300">
-                        Request Private Consultation
+                        Send Project Inquiry
                     </button>
                     
                     <p class="text-[11px] text-[#A1A09A] text-center">
-                        All communications are confidential. We respect your privacy and never distribute contact information.
+                        Submit your project details. Our studio team will review your requirements and contact you via phone or WhatsApp.
                     </p>
                 </form>
             </div>

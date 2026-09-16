@@ -44,7 +44,7 @@
                  class="w-full h-full object-cover">
         </div>
 
-        {{-- Dossier Specifications Bar --}}
+        {{-- Project Specifications Bar --}}
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 p-8 bg-white hairline-all mb-16 text-[13px]">
             <div>
                 <span class="text-[10px] uppercase tracking-[0.18em] text-[#AD8753] block font-semibold mb-1">Location</span>
@@ -64,32 +64,55 @@
             </div>
         </div>
 
-        {{-- Case Study Narrative Content --}}
+        {{-- Case Study Narrative: Brief, Constraints, Scope, Outcome --}}
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 mb-20">
-            <div class="lg:col-span-7 space-y-8">
+            <div class="lg:col-span-7 space-y-10">
+                {{-- 1. Brief --}}
                 <div>
-                    <h2 class="font-serif text-2xl lg:text-3xl text-[#1E211F] mb-4 font-normal">Project Overview</h2>
+                    <span class="text-[10px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold block mb-1">01 / The Brief</span>
+                    <h2 class="font-serif text-2xl lg:text-3xl text-[#1E211F] mb-4 font-normal">Project Brief</h2>
                     <p class="text-[15px] leading-relaxed text-[#676660] font-light">
                         {{ $project['summary'] }}
                     </p>
                 </div>
 
-                <div class="pt-6 hairline-t">
-                    <h2 class="font-serif text-2xl lg:text-3xl text-[#1E211F] mb-4 font-normal">The Design Challenge</h2>
+                {{-- 2. Constraints --}}
+                <div class="pt-8 hairline-t">
+                    <span class="text-[10px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold block mb-1">02 / Constraints</span>
+                    <h2 class="font-serif text-2xl lg:text-3xl text-[#1E211F] mb-4 font-normal">Site Constraints & Challenges</h2>
                     <p class="text-[15px] leading-relaxed text-[#676660] font-light">
                         {{ $project['challenge'] }}
                     </p>
                 </div>
 
-                <div class="pt-6 hairline-t">
-                    <h2 class="font-serif text-2xl lg:text-3xl text-[#1E211F] mb-4 font-normal">The Architectural Approach</h2>
+                {{-- 3. Scope of Work --}}
+                <div class="pt-8 hairline-t">
+                    <span class="text-[10px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold block mb-1">03 / Scope</span>
+                    <h2 class="font-serif text-2xl lg:text-3xl text-[#1E211F] mb-4 font-normal">Scope of Work</h2>
+                    <p class="text-[15px] leading-relaxed text-[#676660] font-light mb-4">
+                        Turnkey execution scope: {{ $project['scope'] }}.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                        @foreach($project['services'] as $service)
+                            <div class="flex items-center gap-2 text-[13px] text-[#1E211F] bg-[#F7F5F0] px-3.5 py-2.5 border border-black/5">
+                                <span class="text-[#AD8753]">✦</span>
+                                <span>{{ $service }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- 4. Outcome --}}
+                <div class="pt-8 hairline-t">
+                    <span class="text-[10px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold block mb-1">04 / Outcome</span>
+                    <h2 class="font-serif text-2xl lg:text-3xl text-[#1E211F] mb-4 font-normal">Design Outcome & Execution</h2>
                     <p class="text-[15px] leading-relaxed text-[#676660] font-light">
                         {{ $project['solution'] }}
                     </p>
                 </div>
             </div>
 
-            {{-- Sidebar: Materiality & Scope --}}
+            {{-- Sidebar: Materiality & Inquiries --}}
             <div class="lg:col-span-5 space-y-8">
                 <div class="bg-[#EFEAE2]/60 p-8 hairline-all">
                     <h3 class="text-[11px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold mb-4">
@@ -103,42 +126,33 @@
                             </li>
                         @endforeach
                     </ul>
-
-                    <h3 class="text-[11px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold mt-8 mb-4">
-                        Turnkey Services Delivered
-                    </h3>
-                    <ul class="space-y-2.5 text-[13px] text-[#1E211F]">
-                        @foreach($project['services'] as $service)
-                            <li class="flex items-center gap-2">
-                                <span class="text-[#AD8753]">✓</span>
-                                <span>{{ $service }}</span>
-                            </li>
-                        @endforeach
-                    </ul>
                 </div>
 
-                {{-- Direct Atelier Concierge Card --}}
+                {{-- Direct Studio Contact Card --}}
                 <div class="bg-[#1E211F] text-[#F7F5F0] p-8 hairline-all">
-                    <h4 class="font-serif text-xl text-white font-normal mb-2">Commission a Similar Space</h4>
+                    <h4 class="font-serif text-xl text-white font-normal mb-2">Commission a Similar Project</h4>
                     <p class="text-[13px] text-[#A1A09A] mb-6">
-                        Speak directly with Founder & CEO Mushfiqur Rahman Razi regarding your residential or commercial site.
+                        Contact our Dhaka studio to discuss your residential, commercial, or renovation project.
                     </p>
                     <a href="{{ route('contact') }}" 
-                       class="block w-full text-center py-3 bg-[#AD8753] text-[#1E211F] text-[11px] uppercase tracking-[0.18em] font-semibold hover:bg-white transition-colors">
-                        Book a Consultation
+                       class="block w-full text-center py-3.5 bg-[#AD8753] text-[#1E211F] text-[11px] uppercase tracking-[0.18em] font-semibold hover:bg-white transition-colors">
+                        Start a Project
                     </a>
                 </div>
             </div>
         </div>
 
-        {{-- Large Image Gallery --}}
-        <section class="mb-24" aria-label="Project Gallery">
-            <h2 class="font-serif text-3xl text-[#1E211F] mb-8 font-normal">Visual Documentation</h2>
+        {{-- Project Gallery --}}
+        <section class="mb-24" aria-label="Project Visuals">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="font-serif text-3xl text-[#1E211F] font-normal">Project Gallery</h2>
+                <span class="text-[11px] uppercase tracking-[0.16em] text-[#676660]">Visual Documentation</span>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 @foreach($project['gallery'] as $galleryImage)
-                    <div class="overflow-hidden bg-[#EFEAE2] hairline-all aspect-[16/10]">
+                    <div class="overflow-hidden bg-[#EFEAE2] hairline-all aspect-[16/10] shadow-sm">
                         <img src="{{ asset($galleryImage) }}" 
-                             alt="{{ $project['title'] }} detail photography" 
+                             alt="{{ $project['title'] }} architectural view" 
                              loading="lazy" 
                              width="800" 
                              height="500" 

@@ -35,7 +35,7 @@
             </a>
 
             {{-- Desktop Navigation Links --}}
-            <div class="hidden md:flex items-center gap-8 lg:gap-10 text-[13px] uppercase tracking-[0.14em] text-[#1E211F] font-medium font-sans">
+            <div class="hidden lg:flex items-center gap-6 xl:gap-10 text-[12px] xl:text-[13px] uppercase tracking-[0.14em] text-[#1E211F] font-medium font-sans">
                 <a href="{{ route('projects.index') }}" 
                    class="relative py-1 transition-colors hover:text-[#AD8753] {{ request()->routeIs('projects.*') ? 'text-[#AD8753]' : '' }}">
                     Projects
@@ -81,9 +81,9 @@
             </div>
 
             {{-- Right Actions: Consultation CTA & Mobile Toggle --}}
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3 sm:gap-4">
                 <a href="{{ route('contact') }}" 
-                   class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-[#1E211F] text-[#F7F5F0] hover:bg-[#AD8753] text-[11px] uppercase tracking-[0.16em] font-medium transition-all duration-300 border border-transparent shadow-sm">
+                   class="hidden sm:inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 bg-[#1E211F] text-[#F7F5F0] hover:bg-[#AD8753] text-[11px] uppercase tracking-[0.16em] font-medium transition-all duration-300 border border-transparent shadow-sm shrink-0">
                     <span>Start a Project</span>
                     <span class="text-[#AD8753] group-hover:text-white transition-colors">→</span>
                 </a>
@@ -91,8 +91,8 @@
                 {{-- Mobile Menu Trigger Button --}}
                 <button type="button" 
                         id="mobile-menu-btn"
-                        class="md:hidden p-2 text-[#1E211F] hover:text-[#AD8753] focus:outline-none focus:ring-1 focus:ring-[#AD8753]"
-                        aria-label="Toggle Navigation Menu"
+                        class="lg:hidden p-2 text-[#1E211F] hover:text-[#AD8753] focus:outline-none focus:ring-1 focus:ring-[#AD8753]"
+                        aria-label="Open Navigation Menu"
                         aria-expanded="false"
                         aria-controls="mobile-drawer">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,47 +105,67 @@
 
     {{-- Mobile Architectural Navigation Drawer --}}
     <div id="mobile-drawer" 
-         class="md:hidden fixed inset-0 top-[60px] lg:top-[76px] bg-[#F7F5F0] z-40 transform translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto px-6 py-8 hairline-t"
-         aria-hidden="true">
-        <div class="flex flex-col gap-6 text-[15px] uppercase tracking-[0.16em] text-[#1E211F] font-medium font-sans">
-            <a href="{{ route('home') }}" class="py-2.5 hairline-b flex items-center justify-between">
+         class="lg:hidden fixed inset-0 top-0 bg-[#F7F5F0] z-50 transform translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto px-6 py-6 hairline-t invisible pointer-events-none"
+         role="dialog"
+         aria-modal="true"
+         aria-label="Site Navigation"
+         aria-hidden="true"
+         inert>
+        {{-- Drawer Header with Brand and Close Button --}}
+        <div class="flex items-center justify-between pb-6 hairline-b border-black/10">
+            <div class="flex flex-col">
+                <span class="font-serif text-2xl tracking-[-0.02em] text-[#1E211F] font-medium">CHAMPION</span>
+                <span class="text-[9px] uppercase tracking-[0.22em] text-[#676660] font-sans -mt-0.5 font-semibold">Interior Design • Dhaka</span>
+            </div>
+            <button type="button" 
+                    id="mobile-drawer-close"
+                    class="p-2 text-[#1E211F] hover:text-[#AD8753] focus:outline-none focus:ring-1 focus:ring-[#AD8753]"
+                    aria-label="Close Navigation Menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="flex flex-col gap-4 text-[14px] uppercase tracking-[0.16em] text-[#1E211F] font-medium font-sans pt-6">
+            <a href="{{ route('home') }}" class="py-2.5 hairline-b border-black/10 flex items-center justify-between hover:text-[#AD8753] transition-colors">
                 <span>Home</span>
                 <span class="text-[#AD8753]">→</span>
             </a>
-            <a href="{{ route('projects.index') }}" class="py-2.5 hairline-b flex items-center justify-between">
+            <a href="{{ route('projects.index') }}" class="py-2.5 hairline-b border-black/10 flex items-center justify-between hover:text-[#AD8753] transition-colors">
                 <span>Selected Projects</span>
                 <span class="text-[#AD8753]">→</span>
             </a>
-            <a href="{{ route('services.index') }}" class="py-2.5 hairline-b flex items-center justify-between">
+            <a href="{{ route('services.index') }}" class="py-2.5 hairline-b border-black/10 flex items-center justify-between hover:text-[#AD8753] transition-colors">
                 <span>Core Services</span>
                 <span class="text-[#AD8753]">→</span>
             </a>
-            <a href="{{ route('process') }}" class="py-2.5 hairline-b flex items-center justify-between">
-                <span>8-Step Process</span>
+            <a href="{{ route('process') }}" class="py-2.5 hairline-b border-black/10 flex items-center justify-between hover:text-[#AD8753] transition-colors">
+                <span>Our Process</span>
                 <span class="text-[#AD8753]">→</span>
             </a>
-            <a href="{{ route('about') }}" class="py-2.5 hairline-b flex items-center justify-between">
+            <a href="{{ route('about') }}" class="py-2.5 hairline-b border-black/10 flex items-center justify-between hover:text-[#AD8753] transition-colors">
                 <span>Studio & Founder</span>
                 <span class="text-[#AD8753]">→</span>
             </a>
-            <a href="{{ route('insights.index') }}" class="py-2.5 hairline-b flex items-center justify-between">
+            <a href="{{ route('insights.index') }}" class="py-2.5 hairline-b border-black/10 flex items-center justify-between hover:text-[#AD8753] transition-colors">
                 <span>Editorial Insights</span>
                 <span class="text-[#AD8753]">→</span>
             </a>
-            <a href="{{ route('contact') }}" class="py-2.5 hairline-b flex items-center justify-between">
-                <span>Contact & Atelier</span>
+            <a href="{{ route('contact') }}" class="py-2.5 hairline-b border-black/10 flex items-center justify-between hover:text-[#AD8753] transition-colors">
+                <span>Contact Details</span>
                 <span class="text-[#AD8753]">→</span>
             </a>
 
-            <div class="pt-6 flex flex-col gap-4">
+            <div class="pt-4 flex flex-col gap-3">
                 <a href="{{ route('contact') }}" 
-                   class="w-full text-center py-3.5 bg-[#1E211F] text-[#F7F5F0] text-[12px] uppercase tracking-[0.18em] font-medium">
-                    Book a Private Consultation
+                   class="w-full text-center py-3.5 bg-[#1E211F] text-[#F7F5F0] text-[12px] uppercase tracking-[0.18em] font-medium hover:bg-[#AD8753] transition-colors">
+                    Start a Project
                 </a>
                 <a href="https://wa.me/8801715394444" 
                    target="_blank" 
-                   rel="noopener noreferrer"
-                   class="w-full text-center py-3.5 border border-[#1E211F] text-[#1E211F] text-[12px] uppercase tracking-[0.18em] font-medium hover:border-[#AD8753]">
+                   rel="noopener noreferrer" 
+                   class="w-full text-center py-3.5 border border-[#1E211F] text-[#1E211F] text-[12px] uppercase tracking-[0.18em] font-medium hover:border-[#AD8753] hover:text-[#AD8753] transition-colors">
                     WhatsApp Concierge
                 </a>
             </div>
@@ -158,3 +178,4 @@
         </div>
     </div>
 </header>
+

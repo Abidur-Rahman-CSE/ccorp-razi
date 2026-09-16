@@ -73,56 +73,5 @@
 
     {{-- Architectural Footer --}}
     <x-footer />
-
-    {{-- Vanilla Accessible Script for Header & Mobile Navigation --}}
-    <script>
-        (function() {
-            // Header scroll elevation
-            const header = document.getElementById('site-header');
-            const nav = header ? header.querySelector('nav') : null;
-            
-            function handleScroll() {
-                if (!nav) return;
-                if (window.scrollY > 40) {
-                    nav.classList.add('shadow-[0_10px_30px_-10px_rgba(30,33,31,0.06)]');
-                    nav.style.background = 'rgba(247, 245, 240, 0.94)';
-                } else {
-                    nav.classList.remove('shadow-[0_10px_30px_-10px_rgba(30,33,31,0.06)]');
-                    nav.style.background = 'rgba(247, 245, 240, 0.88)';
-                }
-            }
-            window.addEventListener('scroll', handleScroll, { passive: true });
-
-            // Mobile menu toggle
-            const menuBtn = document.getElementById('mobile-menu-btn');
-            const drawer = document.getElementById('mobile-drawer');
-
-            if (menuBtn && drawer) {
-                menuBtn.addEventListener('click', function() {
-                    const isExpanded = menuBtn.getAttribute('aria-expanded') === 'true';
-                    menuBtn.setAttribute('aria-expanded', !isExpanded);
-                    drawer.setAttribute('aria-hidden', isExpanded);
-                    
-                    if (!isExpanded) {
-                        drawer.classList.remove('translate-x-full');
-                        document.body.style.overflow = 'hidden';
-                    } else {
-                        drawer.classList.add('translate-x-full');
-                        document.body.style.overflow = '';
-                    }
-                });
-
-                // Close drawer on internal link click
-                drawer.querySelectorAll('a').forEach(function(link) {
-                    link.addEventListener('click', function() {
-                        menuBtn.setAttribute('aria-expanded', 'false');
-                        drawer.setAttribute('aria-hidden', 'true');
-                        drawer.classList.add('translate-x-full');
-                        document.body.style.overflow = '';
-                    });
-                });
-            }
-        })();
-    </script>
 </body>
 </html>
