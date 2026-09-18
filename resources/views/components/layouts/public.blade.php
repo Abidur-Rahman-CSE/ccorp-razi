@@ -58,7 +58,7 @@
     {{-- Optional Head Slots for LCP Image Preloads --}}
     {{ $head ?? '' }}
 </head>
-<body class="bg-[#F7F5F0] text-[#1E211F] font-sans antialiased selection:bg-[#AD8753] selection:text-white min-h-screen flex flex-col">
+<body class="public-site {{ request()->routeIs('home') ? 'champion-home' : '' }} bg-[#F7F5F0] text-[#1E211F] font-sans antialiased selection:bg-[#AD8753] selection:text-white min-h-screen flex flex-col">
 
     {{-- Accessible Skip Link --}}
     <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-[#1E211F] focus:text-[#F7F5F0] focus:px-5 focus:py-3 focus:font-medium focus:shadow-xl focus:outline-none">

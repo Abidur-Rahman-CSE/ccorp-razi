@@ -21,6 +21,19 @@ const appName = import.meta.env.VITE_APP_NAME || 'Champion Interior Design';
 function initMarketingExperience() {
     document.documentElement.classList.add('motion-ready');
 
+    const architecturalScene = document.querySelector<HTMLElement>(
+        '[data-architectural-scene]',
+    );
+    if (architecturalScene) {
+        void import('./motion/architectural-scene')
+            .then(({ initArchitecturalScene }) =>
+                initArchitecturalScene(architecturalScene),
+            )
+            .catch(() => {
+                architecturalScene.dataset.sceneState = 'fallback';
+            });
+    }
+
     // 1. Initialize Luxury Architectural Motion System
     initLenis();
     initSmartNav();

@@ -66,9 +66,15 @@ export function initSmartNav(): void {
 }
 
 function initMobileMenu(): void {
-    const menuBtn = document.getElementById('mobile-menu-btn') as HTMLButtonElement | null;
-    const drawer = document.getElementById('mobile-drawer') as HTMLElement | null;
-    const closeBtn = document.getElementById('mobile-drawer-close') as HTMLButtonElement | null;
+    const menuBtn = document.getElementById(
+        'mobile-menu-btn',
+    ) as HTMLButtonElement | null;
+    const drawer = document.getElementById(
+        'mobile-drawer',
+    ) as HTMLElement | null;
+    const closeBtn = document.getElementById(
+        'mobile-drawer-close',
+    ) as HTMLButtonElement | null;
 
     if (!menuBtn || !drawer) return;
 
@@ -76,10 +82,11 @@ function initMobileMenu(): void {
 
     function getFocusableElements(): HTMLElement[] {
         if (!drawer) return [];
-        const selector = 'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-        return Array.from(drawer.querySelectorAll<HTMLElement>(selector)).filter(
-            (el) => el.offsetParent !== null || el === closeBtn
-        );
+        const selector =
+            'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+        return Array.from(
+            drawer.querySelectorAll<HTMLElement>(selector),
+        ).filter((el) => el.offsetParent !== null || el === closeBtn);
     }
 
     function openDrawer(): void {
@@ -90,7 +97,11 @@ function initMobileMenu(): void {
         menuBtn?.setAttribute('aria-label', 'Close Navigation Menu');
         drawer?.removeAttribute('inert');
         drawer?.setAttribute('aria-hidden', 'false');
-        drawer?.classList.remove('translate-x-full', 'invisible', 'pointer-events-none');
+        drawer?.classList.remove(
+            'translate-x-full',
+            'invisible',
+            'pointer-events-none',
+        );
         document.body.style.overflow = 'hidden';
 
         // Move focus into the opened menu
@@ -114,7 +125,11 @@ function initMobileMenu(): void {
         menuBtn?.setAttribute('aria-label', 'Open Navigation Menu');
         drawer?.setAttribute('inert', '');
         drawer?.setAttribute('aria-hidden', 'true');
-        drawer?.classList.add('translate-x-full', 'invisible', 'pointer-events-none');
+        drawer?.classList.add(
+            'translate-x-full',
+            'invisible',
+            'pointer-events-none',
+        );
         document.body.style.overflow = '';
 
         document.removeEventListener('keydown', handleKeydown);
@@ -177,11 +192,10 @@ function initMobileMenu(): void {
         });
     });
 
-    // Reset menu state correctly when resizing to desktop (>= 1024px)
+    // Reset menu state correctly when resizing to desktop (>= 1200px)
     window.addEventListener('resize', () => {
-        if (window.innerWidth >= 1024 && isOpen) {
+        if (window.innerWidth >= 1200 && isOpen) {
             closeDrawer(false);
         }
     });
 }
-
