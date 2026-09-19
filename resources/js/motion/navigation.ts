@@ -8,6 +8,8 @@ export function initSmartNav(): void {
     let isHidden = false;
     const scrollThreshold = 120;
     const deltaThreshold = 8;
+    const persistentNavigation =
+        document.body.classList.contains('champion-home');
 
     function handleScroll(currentY: number) {
         // Dark top bar ONLY shows at screen top (scrollY <= 15), collapses completely when scrolled down
@@ -22,6 +24,11 @@ export function initSmartNav(): void {
             nav?.classList.add('nav-scrolled');
         } else {
             nav?.classList.remove('nav-scrolled');
+        }
+
+        if (persistentNavigation) {
+            lastScrollY = currentY;
+            return;
         }
 
         // Directional hide / show for main navigation

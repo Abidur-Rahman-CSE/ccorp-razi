@@ -1,536 +1,321 @@
 import * as THREE from 'three';
-import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
-/** A conceptual interior, built locally from geometry rather than a project photograph. */
+/** Photograph-space anchors keep the pendant registered when the cover crop changes. */
 export function initArchitecturalScene(host: HTMLElement): void {
-    const canvas = host.querySelector<HTMLCanvasElement>('canvas');
     const hero = host.closest<HTMLElement>('.architecture-hero');
-    if (!canvas || !hero) return;
+    const canvas = host.querySelector<HTMLCanvasElement>('canvas');
+    const offPlate = host.querySelector<HTMLImageElement>('[data-room-off]');
+    const onPlate = host.querySelector<HTMLImageElement>('[data-room-on]');
+    if (!hero || !canvas || !offPlate || !onPlate) return;
 
-    const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
-    const signal = new AbortController();
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const abort = new AbortController();
+    const { signal } = abort;
+    const screen = document.querySelector<HTMLElement>('[data-wood-reveal]');
+    const pause = hero.querySelector<HTMLButtonElement>('[data-scene-pause]');
+    const chapter = hero.querySelector<HTMLElement>('[data-scene-chapter]');
+    let renderer: THREE.WebGLRenderer | undefined;
+    let model: THREE.Group | undefined;
+    let environment: THREE.WebGLRenderTarget | undefined;
     let disposed = false;
-    let paused = motionPreference.matches;
-    let inView = true;
+    let ready = false;
+    let failed = false;
+    let paused = false;
+    let visible = true;
     let frame = 0;
     let progress = 0;
-    let pointerX = 0;
-    let pointerY = 0;
-    let detail = false;
-    let dusk = false;
-    const textures: THREE.Texture[] = [];
-    let renderer: THREE.WebGLRenderer;
+    let lastTime = 0;
+    let width = 1;
+    let height = 1;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 30);
+    camera.position.z = 5;
+    const luminousMaterials: THREE.MeshStandardMaterial[] = [];
+    const clamp = THREE.MathUtils.clamp;
+    const ease = (value: number, from: number, to: number) =>
+        THREE.MathUtils.smoothstep(value, from, to);
 
-    try {
-        renderer = new THREE.WebGLRenderer({
-            canvas,
-            antialias: true,
-            alpha: true,
-            powerPreference: 'low-power',
+    function releaseObject(object: THREE.Object3D): void {
+        const materials = new Set<THREE.Material>();
+        const textures = new Set<THREE.Texture>();
+        object.traverse((child) => {
+            if (!(child instanceof THREE.Mesh)) return;
+            child.geometry.dispose();
+            const list = Array.isArray(child.material)
+                ? child.material
+                : [child.material];
+            list.forEach((material: THREE.Material) => materials.add(material));
         });
-    } catch {
-        host.dataset.sceneState = 'fallback';
-        return;
+        materials.forEach((material) => {
+            Object.values(material).forEach((value: unknown) => {
+                if (value instanceof THREE.Texture) textures.add(value);
+            });
+            material.dispose();
+        });
+        textures.forEach((texture) => texture.dispose());
     }
 
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.25;
+    function fallback(): void {
+        ready = false;
+        failed = true;
+        hero!.classList.remove('scene-ready');
+        hero!.classList.add('scene-static');
+        host.dataset.sceneState = 'fallback';
+        if (pause) pause.hidden = true;
+        cancelAnimationFrame(frame);
+        frame = 0;
+    }
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 90);
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    const environment = new RoomEnvironment();
-    const environmentTarget = pmrem.fromScene(environment, 0.04);
-    scene.environment = environmentTarget.texture;
-    scene.environmentIntensity = 0.4;
-    environment.dispose();
-    pmrem.dispose();
+    function draw(time: number): void {
+        frame = 0;
+        if (disposed || document.hidden) return;
+        const isStatic = reducedMotion.matches || !ready;
+        const rect = hero!.getBoundingClientRect();
+        const distance = Math.max(
+            1,
+            hero!.offsetHeight -
+                (host.parentElement?.clientHeight ?? host.clientHeight),
+        );
+        const target = isStatic
+            ? 1
+            : paused
+              ? progress
+              : clamp(-rect.top / distance, 0, 1);
+        const delta = Math.min(64, lastTime ? time - lastTime : 16);
+        lastTime = time;
+        progress += (target - progress) * (1 - Math.exp(-delta / 65));
+        if (Math.abs(target - progress) < 0.0001) progress = target;
+        const travel = ease(progress, 0.07, 0.62);
+        const light = ease(progress, 0.65, 0.85);
+        hero!.style.setProperty('--room-light', String(light));
+        hero!.dataset.sceneProgress = progress.toFixed(3);
+        if (chapter)
+            chapter.textContent =
+                progress < 0.62
+                    ? '01 / A considered detail'
+                    : progress < 0.85
+                      ? '02 / A warmer atmosphere'
+                      : '03 / A space comes to life';
 
-    function texture(kind: 'stone' | 'wood' | 'fabric'): THREE.CanvasTexture {
-        const surface = document.createElement('canvas');
-        surface.width = surface.height = 256;
-        const context = surface.getContext('2d')!;
-        context.fillStyle =
-            kind === 'wood'
-                ? '#a68159'
-                : kind === 'stone'
-                  ? '#d1c1aa'
-                  : '#cec2ae';
-        context.fillRect(0, 0, 256, 256);
-        let seed = 42;
-        const random = () => {
-            seed = (seed * 16807) % 2147483647;
-            return seed / 2147483647;
-        };
-        for (let i = 0; i < 6500; i++) {
-            const shade = random() > 0.5 ? '255,255,255' : '40,25,15';
-            context.fillStyle = `rgba(${shade},${random() * 0.1})`;
-            context.fillRect(
-                random() * 256,
-                random() * 256,
-                kind === 'wood' ? 1 : 2,
-                kind === 'wood' ? random() * 60 : 1,
+        if (model && renderer && visible && !isStatic) {
+            // object-fit: cover, with an independent portrait crop. The camera never moves.
+            const imageScale = Math.max(width / 1536, height / 1024);
+            const imageWidth = 1536 * imageScale;
+            const imageHeight = 1024 * imageScale;
+            const cropX = (width - imageWidth) * (width < 901 ? 0.68 : 0.5);
+            const cropY = (height - imageHeight) * 0.5;
+            const anchorX = 1060 * imageScale + cropX;
+            const anchorY = 120 * imageScale + cropY;
+            const finalHeight = 260 * imageScale;
+            const closeHeight = Math.min(height * 0.89, finalHeight * 2.9);
+            const projectedHeight = THREE.MathUtils.lerp(
+                closeHeight,
+                finalHeight,
+                travel,
+            );
+            const tangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+            const objectScale = (finalHeight * (2 * tangent * 5)) / height;
+            const depth =
+                (objectScale * height) / (2 * tangent * projectedHeight);
+            const pixelToWorld = (2 * tangent * depth) / height;
+            const x = THREE.MathUtils.lerp(
+                width * (width < 901 ? 0.76 : 0.73),
+                anchorX,
+                travel,
+            );
+            const y = THREE.MathUtils.lerp(-height * 0.13, anchorY, travel);
+            model.position.set(
+                (x - width / 2) * pixelToWorld,
+                (height / 2 - y) * pixelToWorld,
+                5 - depth,
+            );
+            model.scale.setScalar(objectScale);
+            model.rotation.set(
+                0.1 * (1 - travel),
+                -0.55 * (1 - travel),
+                -0.045 * (1 - travel),
+            );
+            luminousMaterials.forEach((material) => {
+                material.emissiveIntensity = light * 1.65;
+            });
+            renderer.render(scene, camera);
+            host.style.setProperty('--pendant-x', `${anchorX}px`);
+            host.style.setProperty('--pendant-y', `${anchorY}px`);
+            host.style.setProperty(
+                '--pendant-seated',
+                String(ease(progress, 0.55, 0.63)),
             );
         }
-        if (kind === 'stone') {
-            for (let row = 0; row < 30; row++) {
-                context.strokeStyle = `rgba(95,73,49,${0.03 + random() * 0.08})`;
-                context.beginPath();
-                for (let x = 0; x < 257; x += 4) {
-                    const y = row * 9 + Math.sin(x / 50 + row) * 3;
-                    if (x === 0) context.moveTo(x, y);
-                    else context.lineTo(x, y);
-                }
-                context.stroke();
-            }
+        if (screen) {
+            const screenRect = screen.getBoundingClientRect();
+            const reveal =
+                isStatic || paused
+                    ? 1
+                    : ease(
+                          (window.innerHeight - screenRect.top) /
+                              (window.innerHeight * 0.72),
+                          0.1,
+                          1,
+                      );
+            screen.style.setProperty('--screen-open', String(reveal));
         }
-        const result = new THREE.CanvasTexture(surface);
-        result.colorSpace = THREE.SRGBColorSpace;
-        result.wrapS = result.wrapT = THREE.RepeatWrapping;
-        result.anisotropy = Math.min(
-            renderer.capabilities.getMaxAnisotropy(),
-            4,
-        );
-        textures.push(result);
-        return result;
+        if (Math.abs(target - progress) > 0.0001) requestDraw();
     }
 
-    const stoneTexture = texture('stone');
-    const woodTexture = texture('wood');
-    const fabricTexture = texture('fabric');
-    const stone = new THREE.MeshStandardMaterial({
-        map: stoneTexture,
-        roughness: 0.72,
-    });
-    const plaster = new THREE.MeshStandardMaterial({
-        color: '#c3b6a1',
-        roughness: 0.92,
-    });
-    const wood = new THREE.MeshStandardMaterial({
-        map: woodTexture,
-        color: '#8d6745',
-        roughness: 0.65,
-    });
-    const darkWood = new THREE.MeshStandardMaterial({
-        color: '#35281d',
-        roughness: 0.7,
-    });
-    const linen = new THREE.MeshStandardMaterial({
-        map: fabricTexture,
-        color: '#f3ead9',
-        roughness: 1,
-    });
-    const olive = new THREE.MeshStandardMaterial({
-        color: '#555b39',
-        roughness: 0.92,
-    });
-    const brass = new THREE.MeshStandardMaterial({
-        color: '#be9556',
-        metalness: 0.8,
-        roughness: 0.32,
-    });
-    const black = new THREE.MeshStandardMaterial({
-        color: '#211e1a',
-        roughness: 0.6,
-    });
-    const glow = new THREE.MeshStandardMaterial({
-        color: '#ffe1a0',
-        emissive: '#ffc26b',
-        emissiveIntensity: 2,
-    });
-    const model = new THREE.Group();
-    scene.add(model);
-
-    function box(
-        w: number,
-        h: number,
-        d: number,
-        x: number,
-        y: number,
-        z: number,
-        material: THREE.Material,
-        radius = 0,
-    ): THREE.Mesh {
-        const geometry = radius
-            ? new RoundedBoxGeometry(w, h, d, 3, radius)
-            : new THREE.BoxGeometry(w, h, d);
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(x, y, z);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        model.add(mesh);
-        return mesh;
+    function requestDraw(): void {
+        if (!disposed && !frame && !document.hidden)
+            frame = requestAnimationFrame(draw);
     }
 
-    function cylinder(
-        top: number,
-        bottom: number,
-        height: number,
-        x: number,
-        y: number,
-        z: number,
-        material: THREE.Material,
-    ): THREE.Mesh {
-        const mesh = new THREE.Mesh(
-            new THREE.CylinderGeometry(top, bottom, height, 48),
-            material,
-        );
-        mesh.position.set(x, y, z);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        model.add(mesh);
-        return mesh;
-    }
-
-    // Open architectural model: the front and left elevations are cut away.
-    box(9.4, 0.32, 7.4, 0, -0.2, 0, darkWood);
-    box(9.15, 0.12, 7.15, 0, 0.01, 0, stone);
-    box(9.2, 3.65, 0.18, 0, 1.82, -3.5, plaster);
-    box(0.18, 3.65, 7.1, 4.5, 1.82, 0, plaster);
-    for (let index = 0; index < 7; index++) {
-        box(0.013, 0.003, 7.05, -3.5 + index * 1.16, 0.075, 0, darkWood);
-    }
-    for (let index = 0; index < 4; index++) {
-        box(9, 0.003, 0.012, 0, 0.075, -2.6 + index * 1.65, darkWood);
-    }
-
-    // Ribbed walnut feature wall and an illuminated stone recess.
-    box(4.1, 3.55, 0.12, -2.35, 1.8, -3.34, darkWood);
-    for (let index = 0; index < 34; index++) {
-        box(0.065, 3.5, 0.1, -4.31 + index * 0.119, 1.81, -3.23, wood);
-    }
-    box(3.3, 2.65, 0.18, 1.55, 1.9, -3.32, stone);
-    box(3.45, 0.035, 0.07, 1.55, 3.24, -3.2, glow);
-    box(3.45, 0.035, 0.07, 1.55, 0.55, -3.2, glow);
-    box(3.65, 0.32, 0.7, 1.4, 0.44, -2.96, wood, 0.04);
-
-    // Abstract artwork: no borrowed photography or external models.
-    box(1.48, 1.76, 0.09, 1.55, 2.01, -3.15, darkWood);
-    box(1.35, 1.63, 0.035, 1.55, 2.01, -3.085, linen);
-    const artwork = new THREE.Mesh(
-        new THREE.CircleGeometry(0.46, 48),
-        new THREE.MeshStandardMaterial({ color: '#835637', roughness: 1 }),
-    );
-    artwork.position.set(1.58, 2.13, -3.059);
-    model.add(artwork);
-    box(0.22, 1.19, 0.014, 1.38, 1.95, -3.04, darkWood);
-
-    // Window frames and a timber pergola allow the light to describe the space.
-    for (let index = 0; index < 5; index++) {
-        box(0.065, 3.5, 0.065, -4.46, 1.82, -3.4 + index * 1.7, brass);
-    }
-    box(0.09, 0.12, 7.1, -4.45, 3.56, 0, darkWood);
-    box(9.1, 0.14, 0.14, 0, 3.59, -3.43, darkWood);
-    for (let index = 0; index < 10; index++) {
-        box(0.12, 0.13, 2.05, -4.28 + index * 0.92, 3.57, -2.45, wood);
-    }
-
-    // Woven rug, modular linen sofa, cushions and a pair of low tables.
-    box(5.3, 0.035, 4.3, -0.55, 0.105, 0.1, linen, 0.08);
-    box(3.8, 0.28, 1.35, -1.1, 0.37, -1.6, darkWood, 0.09);
-    box(3.85, 0.65, 0.32, -1.1, 0.78, -2.14, linen, 0.12);
-    for (let index = 0; index < 3; index++) {
-        box(1.15, 0.27, 1.03, -2.3 + index * 1.2, 0.62, -1.47, linen, 0.12);
-    }
-    box(0.3, 0.58, 1.4, -3.0, 0.67, -1.61, linen, 0.1);
-    box(0.3, 0.58, 1.4, 0.8, 0.67, -1.61, linen, 0.1);
-    const cushion = box(0.63, 0.55, 0.18, -2.36, 0.99, -1.87, olive, 0.1);
-    cushion.rotation.z = 0.15;
-    const cushionTwo = box(0.61, 0.51, 0.18, 0.12, 0.95, -1.87, wood, 0.1);
-    cushionTwo.rotation.z = -0.13;
-    cylinder(0.72, 0.77, 0.32, -0.7, 0.28, 0.35, darkWood);
-    cylinder(1.0, 1.0, 0.095, -0.7, 0.485, 0.35, stone);
-    cylinder(0.43, 0.47, 0.52, 0.7, 0.37, 0.96, wood);
-    cylinder(0.57, 0.57, 0.06, 0.7, 0.66, 0.96, brass);
-    box(0.42, 0.055, 0.3, -0.45, 0.56, 0.3, black);
-    box(0.39, 0.04, 0.28, -0.48, 0.605, 0.31, linen);
-    cylinder(0.12, 0.19, 0.28, -1.0, 0.66, 0.5, darkWood);
-
-    const chair = new THREE.Group();
-    const chairParts: THREE.Mesh[] = [];
-    chairParts.push(box(1.05, 0.32, 1.15, 2.48, 0.47, 1.2, linen, 0.15));
-    chairParts.push(box(1.05, 0.74, 0.25, 2.48, 0.82, 1.7, linen, 0.13));
-    for (const x of [2.0, 2.96]) {
-        chairParts.push(box(0.09, 0.56, 1.25, x, 0.44, 1.25, wood, 0.035));
-    }
-    chair.position.set(2.48, 0, 1.2);
-    model.add(chair);
-    for (const part of chairParts) {
-        part.position.sub(chair.position);
-        chair.add(part);
-    }
-    chair.rotation.y = -0.3;
-
-    // A suspended brass light, with actual emissive geometry.
-    const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(0.92, 0.027, 10, 80),
-        brass,
-    );
-    ring.rotation.x = Math.PI / 2;
-    ring.position.set(-0.7, 2.72, 0.05);
-    model.add(ring);
-    const diffuser = new THREE.Mesh(
-        new THREE.TorusGeometry(0.92, 0.012, 8, 80),
-        glow,
-    );
-    diffuser.rotation.x = Math.PI / 2;
-    diffuser.position.set(-0.7, 2.697, 0.05);
-    model.add(diffuser);
-    for (const x of [-1.3, -0.1])
-        cylinder(0.006, 0.006, 0.84, x, 3.13, 0.05, black);
-
-    // A sculptural indoor tree provides organic contrast to the joinery.
-    cylinder(0.36, 0.26, 0.64, 3.45, 0.4, -2.0, stone);
-    cylinder(0.035, 0.065, 1.65, 3.45, 1.52, -2.0, wood);
-    const leafGeometry = new THREE.SphereGeometry(1, 10, 8);
-    for (let index = 0; index < 35; index++) {
-        const angle = index * 2.39996;
-        const radius = 0.2 + (index % 6) * 0.1;
-        const leaf = new THREE.Mesh(leafGeometry, olive);
-        leaf.position.set(
-            3.45 + Math.cos(angle) * radius,
-            1.65 + (index % 9) * 0.115,
-            -2 + Math.sin(angle) * radius,
-        );
-        leaf.scale.set(0.27, 0.065, 0.13);
-        leaf.rotation.set(index * 0.19, angle, index * 0.28);
-        leaf.castShadow = true;
-        model.add(leaf);
-    }
-
-    const ground = new THREE.Mesh(
-        new THREE.PlaneGeometry(100, 100),
-        new THREE.ShadowMaterial({ opacity: 0.28 }),
-    );
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -0.39;
-    ground.receiveShadow = true;
-    scene.add(ground);
-
-    const sky = new THREE.HemisphereLight('#fff0d5', '#46392d', 2.0);
-    scene.add(sky);
-    const sunlight = new THREE.DirectionalLight('#ffe0b0', 4);
-    sunlight.position.set(-6, 9, 4);
-    sunlight.castShadow = true;
-    sunlight.shadow.mapSize.set(1024, 1024);
-    sunlight.shadow.camera.left = -8;
-    sunlight.shadow.camera.right = 8;
-    sunlight.shadow.camera.top = 8;
-    sunlight.shadow.camera.bottom = -8;
-    sunlight.shadow.normalBias = 0.035;
-    sunlight.shadow.bias = -0.0001;
-    scene.add(sunlight);
-    const lamp = new THREE.PointLight('#ffd494', 14, 9, 2);
-    lamp.position.set(-0.7, 2.6, 0.05);
-    scene.add(lamp);
-    const recessLight = new THREE.PointLight('#ffc578', 7, 7, 2);
-    recessLight.position.set(1.5, 2.85, -2.9);
-    scene.add(recessLight);
-
-    const targetCamera = new THREE.Vector3();
-    const targetLook = new THREE.Vector3(0, 1.1, 0);
-    const currentLook = targetLook.clone();
-    camera.position.set(-11, 8.3, 13.5);
-
-    function render(): void {
-        frame = 0;
-        if (disposed || !inView || document.hidden) return;
-        const travel = progress;
-        const compact = host!.clientWidth < 650;
-        targetCamera.set(
-            (detail ? -6.2 : -11) + travel * 3 + pointerX * 0.65,
-            (detail ? 4.5 : 8.3) - travel * 1.8 + pointerY * 0.35,
-            (detail ? 8.8 : 13.5) - travel * 2.2,
-        );
-        targetCamera.multiplyScalar(
-            compact ? 1.08 : Math.max(1, 1.55 / camera.aspect),
-        );
-        targetLook.set(
-            detail ? 0.15 : 0,
-            detail ? 1.0 : 1.1,
-            detail ? -0.5 : 0,
-        );
-        const immediate = paused || motionPreference.matches;
-        camera.position.lerp(targetCamera, immediate ? 1 : 0.075);
-        currentLook.lerp(targetLook, immediate ? 1 : 0.075);
-        camera.lookAt(currentLook);
-        renderer.render(scene, camera);
-        host!.dataset.sceneState = 'ready';
-        hero!.classList.add('scene-ready');
-        if (
-            camera.position.distanceTo(targetCamera) > 0.003 ||
-            currentLook.distanceTo(targetLook) > 0.003
-        )
-            requestRender();
-    }
-
-    function requestRender(): void {
-        if (!frame && !disposed) frame = requestAnimationFrame(render);
-    }
-
-    const resize = new ResizeObserver(() => {
-        const width = host.clientWidth;
-        const height = host.clientHeight;
+    function resize(): void {
+        width = host.clientWidth;
+        height = host.clientHeight;
         if (!width || !height) return;
-        renderer.setSize(width, height, false);
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
-        requestRender();
-    });
-    resize.observe(host);
-
-    const observer = new IntersectionObserver(([entry]) => {
-        inView = entry.isIntersecting;
-        if (inView) requestRender();
-    });
-    observer.observe(hero);
-
-    hero.addEventListener(
-        'pointermove',
-        (event) => {
-            if (event.pointerType !== 'mouse' || paused) return;
-            const rect = hero.getBoundingClientRect();
-            pointerX = (event.clientX - rect.left) / rect.width - 0.5;
-            pointerY = event.clientY / innerHeight - 0.5;
-            requestRender();
-        },
-        { signal: signal.signal },
-    );
-    hero.addEventListener(
-        'pointerleave',
-        () => {
-            if (paused) return;
-            pointerX = pointerY = 0;
-            requestRender();
-        },
-        { signal: signal.signal },
-    );
-    window.addEventListener(
-        'scroll',
-        () => {
-            if (paused) return;
-            progress = THREE.MathUtils.clamp(
-                -hero.getBoundingClientRect().top / innerHeight,
-                0,
-                1,
-            );
-            if (!paused && inView) requestRender();
-        },
-        { passive: true, signal: signal.signal },
-    );
-    document.addEventListener('visibilitychange', requestRender, {
-        signal: signal.signal,
-    });
-
-    const pauseButton =
-        hero.querySelector<HTMLButtonElement>('[data-scene-pause]');
-    function updatePause(): void {
-        pauseButton?.setAttribute('aria-pressed', String(paused));
-        if (pauseButton)
-            pauseButton.textContent = paused ? 'Enable motion' : 'Pause motion';
-        requestRender();
+        renderer?.setPixelRatio(
+            Math.min(window.devicePixelRatio, width < 901 ? 1.5 : 1.75),
+        );
+        renderer?.setSize(width, height, false);
+        requestDraw();
     }
-    pauseButton?.addEventListener(
+
+    function preferences(): void {
+        hero!.classList.toggle('scene-static', reducedMotion.matches || failed);
+        if (pause) {
+            pause.hidden = reducedMotion.matches || !ready;
+            pause.setAttribute('aria-pressed', String(paused));
+            pause.textContent = paused ? 'Enable motion' : 'Pause motion';
+        }
+        resize();
+    }
+
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(host);
+    const intersectionObserver = new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+        requestDraw();
+    });
+    intersectionObserver.observe(host);
+    window.addEventListener('scroll', requestDraw, { passive: true, signal });
+    document.addEventListener('visibilitychange', requestDraw, { signal });
+    reducedMotion.addEventListener('change', preferences, { signal });
+    pause?.addEventListener(
         'click',
         () => {
             paused = !paused;
-            updatePause();
+            preferences();
         },
-        { signal: signal.signal },
+        { signal },
     );
-    motionPreference.addEventListener(
-        'change',
-        () => {
-            paused = motionPreference.matches;
-            updatePause();
-        },
-        { signal: signal.signal },
-    );
-    updatePause();
-
-    hero.querySelectorAll<HTMLButtonElement>('[data-scene-light]').forEach(
-        (button) => {
-            button.addEventListener(
-                'click',
-                () => {
-                    dusk = button.dataset.sceneLight === 'dusk';
-                    sunlight.intensity = dusk ? 0.8 : 4;
-                    sky.intensity = dusk ? 0.7 : 2;
-                    lamp.intensity = dusk ? 24 : 14;
-                    renderer.toneMappingExposure = dusk ? 1.1 : 1.25;
-                    hero.dataset.lighting = dusk ? 'dusk' : 'day';
-                    hero.querySelectorAll('[data-scene-light]').forEach(
-                        (item) =>
-                            item.setAttribute(
-                                'aria-pressed',
-                                String(item === button),
-                            ),
-                    );
-                    requestRender();
-                },
-                { signal: signal.signal },
-            );
-        },
-    );
-    hero.querySelector<HTMLButtonElement>(
-        '[data-scene-detail]',
-    )?.addEventListener(
-        'click',
-        (event) => {
-            detail = !detail;
-            const button = event.currentTarget as HTMLButtonElement;
-            button.setAttribute('aria-pressed', String(detail));
-            button.textContent = detail
-                ? 'View full space ↗'
-                : 'Explore the details ↗';
-            requestRender();
-        },
-        { signal: signal.signal },
-    );
-
-    function dispose(): void {
-        if (disposed) return;
-        disposed = true;
-        cancelAnimationFrame(frame);
-        signal.abort();
-        resize.disconnect();
-        observer.disconnect();
-        const geometries = new Set<THREE.BufferGeometry>();
-        const materials = new Set<THREE.Material>();
-        scene.traverse((object) => {
-            if (object instanceof THREE.Mesh) {
-                geometries.add(object.geometry);
-                for (const material of Array.isArray(object.material)
-                    ? object.material
-                    : [object.material])
-                    materials.add(material);
-            }
-        });
-        geometries.forEach((geometry) => geometry.dispose());
-        materials.forEach((material) => material.dispose());
-        textures.forEach((item) => item.dispose());
-        environmentTarget.dispose();
-        renderer.dispose();
-    }
     canvas.addEventListener(
         'webglcontextlost',
         (event) => {
             event.preventDefault();
-            hero.classList.remove('scene-ready');
-            host.dataset.sceneState = 'fallback';
-            dispose();
+            fallback();
         },
-        { signal: signal.signal },
+        { signal },
     );
     window.addEventListener(
         'pagehide',
         (event) => {
-            if (!event.persisted) dispose();
+            if (event.persisted) return;
+            disposed = true;
+            cancelAnimationFrame(frame);
+            abort.abort();
+            resizeObserver.disconnect();
+            intersectionObserver.disconnect();
+            if (model) releaseObject(model);
+            environment?.dispose();
+            renderer?.dispose();
         },
-        { signal: signal.signal },
+        { signal },
     );
+
+    // A static photographic composition is the default; enhance only after every asset succeeds.
+    if (reducedMotion.matches) {
+        fallback();
+        return;
+    }
+    try {
+        renderer = new THREE.WebGLRenderer({
+            canvas,
+            alpha: true,
+            antialias: true,
+            powerPreference: 'low-power',
+        });
+        renderer.setClearColor(0x000000, 0);
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 0.88;
+        const generator = new THREE.PMREMGenerator(renderer);
+        const room = new RoomEnvironment();
+        environment = generator.fromScene(room, 0.04);
+        scene.environment = environment.texture;
+        scene.environmentIntensity = 0.65;
+        room.dispose();
+        generator.dispose();
+        const daylight = new THREE.DirectionalLight('#d9e6ff', 2.1);
+        daylight.position.set(4, 3, 5);
+        scene.add(
+            daylight,
+            new THREE.HemisphereLight('#fff0da', '#58402b', 1.1),
+        );
+        resize();
+        void Promise.all([
+            new GLTFLoader().loadAsync(host.dataset.model!),
+            offPlate.decode(),
+            onPlate.decode(),
+        ])
+            .then(([gltf]) => {
+                if (disposed || failed) {
+                    releaseObject(gltf.scene);
+                    return;
+                }
+                model = new THREE.Group();
+                const bounds = new THREE.Box3().setFromObject(gltf.scene);
+                const size = bounds.getSize(new THREE.Vector3());
+                const center = bounds.getCenter(new THREE.Vector3());
+                gltf.scene.position.set(-center.x, -bounds.max.y, -center.z);
+                const normalized = new THREE.Group();
+                normalized.add(gltf.scene);
+                normalized.scale.setScalar(1 / size.y);
+                model.add(normalized);
+                model.traverse((child) => {
+                    if (!(child instanceof THREE.Mesh)) return;
+                    const materials = Array.isArray(child.material)
+                        ? child.material
+                        : [child.material];
+                    materials.forEach(
+                        (material: THREE.MeshStandardMaterial) => {
+                            if (
+                                material.name.includes('glass') ||
+                                material.name.includes('globe')
+                            ) {
+                                material.emissive.set('#ffd39a');
+                                material.emissiveIntensity = 0;
+                                luminousMaterials.push(material);
+                            } else {
+                                material.color.set('#c5a576');
+                            }
+                        },
+                    );
+                });
+                scene.add(model);
+                progress = 0;
+                ready = true;
+                host.dataset.sceneState = 'ready';
+                hero!.classList.add('scene-ready');
+                preferences();
+            })
+            .catch(() => {
+                fallback();
+                renderer?.dispose();
+            });
+    } catch {
+        fallback();
+        renderer?.dispose();
+    }
 }

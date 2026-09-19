@@ -82,70 +82,116 @@
     color: #a88652;
 }
 .architecture-hero {
-    height: 135svh;
-    min-height: 840px;
+    --room-light: 1;
     position: relative;
-    background: #211e19;
     color: #f2ede3;
+    background: #211e19;
+}
+.architecture-hero.scene-ready:not(.scene-static) {
+    height: 245svh;
 }
 .architecture-sticky {
     position: sticky;
     top: 0;
     height: 100svh;
-    min-height: 650px;
+    min-height: 680px;
     overflow: clip;
     isolation: isolate;
+}
+.architecture-scene {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+.room-plate {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 50%;
+}
+.room-on {
+    opacity: var(--room-light);
+}
+.architecture-scene canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+}
+.scene-ready:not(.scene-static) .architecture-scene canvas {
+    opacity: 1;
+}
+.pendant-contact {
+    position: absolute;
+    left: var(--pendant-x);
+    top: var(--pendant-y);
+    width: 24px;
+    height: 5px;
+    border-radius: 50%;
+    background: #1a130d;
+    filter: blur(3px);
+    transform: translate(-50%, -25%);
+    opacity: var(--pendant-seated, 0);
 }
 .hero-atmosphere {
     position: absolute;
     inset: 0;
-    z-index: -2;
+    z-index: 1;
+    pointer-events: none;
     background:
-        radial-gradient(ellipse at 75% 48%, #62533e55, transparent 65%),
-        linear-gradient(130deg, #1e1e19, #28231c);
-}
-.hero-atmosphere::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0.11;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.5' filter='url(%23n)'/%3E%3C/svg%3E");
+        linear-gradient(
+            90deg,
+            #17130ee8 0%,
+            #17130eb0 28%,
+            #17130e35 50%,
+            transparent 68%
+        ),
+        linear-gradient(
+            0deg,
+            #17130ed9 0%,
+            transparent 30%,
+            transparent 82%,
+            #17130e66 100%
+        );
 }
 .architecture-copy {
     position: relative;
     z-index: 2;
-    padding: clamp(155px, 22vh, 230px) 0 0 6vw;
-    width: 45%;
+    padding: clamp(145px, 20vh, 220px) 0 0 6vw;
+    width: 44%;
     pointer-events: none;
 }
 .architecture-copy a {
     pointer-events: auto;
 }
 .architecture-copy .studio-eyebrow {
-    color: #c8b99f;
     display: flex;
     align-items: center;
     gap: 10px;
+    color: #d7c6aa;
     margin-bottom: 26px;
 }
 .status-dot {
     width: 5px;
     height: 5px;
-    border-radius: 100%;
+    border-radius: 50%;
     background: #d5ba86;
-    box-shadow: 0 0 12px #d5ba8655;
 }
 .architecture-copy h1 {
-    font: 400 clamp(44px, 5.25vw, 84px)/1.035 var(--font-serif);
+    font: 400 clamp(44px, 5.1vw, 80px)/1.035 var(--font-serif);
     letter-spacing: -0.055em;
     max-width: 620px;
     margin-bottom: 26px;
 }
 .hero-description {
-    color: #c2bdb2;
+    color: #d0c9bc;
     font-size: 13px;
     line-height: 1.9;
-    max-width: 345px;
+    max-width: 330px;
 }
 .hero-actions {
     display: flex;
@@ -160,69 +206,27 @@
 .hero-bengali {
     margin-top: 28px !important;
     font-size: 12px;
-    color: #b5a58d;
-}
-.architecture-scene {
-    position: absolute;
-    inset: 95px -6% 75px 39%;
-    z-index: 1;
-}
-.architecture-scene canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: opacity 1s;
-}
-.scene-ready .architecture-scene canvas {
-    opacity: 1;
-}
-.scene-fallback {
-    position: absolute;
-    inset: 10% 8% 12% 15%;
-    width: 77%;
-    height: 78%;
-    object-fit: cover;
-    opacity: 0.42;
-    mask-image: linear-gradient(90deg, transparent, #000 30%);
-    transition: opacity 0.8s;
-}
-.scene-ready .scene-fallback {
-    opacity: 0;
+    color: #c5b89f;
 }
 .scene-caption {
     position: absolute;
     z-index: 2;
     right: 6vw;
-    bottom: 120px;
-    border-left: 1px solid #b8a07866;
-    padding: 0 0 0 18px;
+    bottom: 115px;
 }
 .scene-caption .studio-eyebrow {
     font-size: 9px;
-    color: #d0b791;
+    color: #e1c59b;
 }
 .scene-caption p {
-    font: 400 23px/1.25 var(--font-serif);
-    margin: 7px 0 9px;
+    font: 400 25px/1.25 var(--font-serif);
+    margin: 8px 0;
 }
 .scene-disclaimer {
     display: block;
     font-size: 9px;
+    color: #d0c6b4;
     letter-spacing: 0.03em;
-    color: #b8b1a4;
-}
-.scene-detail {
-    display: none;
-    margin-top: 15px;
-    font-size: 11px;
-    padding: 8px 0;
-    color: #e5d3b6;
-    border-bottom: 1px solid #bc9b6855;
-}
-.scene-ready .scene-detail {
-    display: block;
 }
 .hero-bottom {
     position: absolute;
@@ -234,12 +238,12 @@
     justify-content: space-between;
     align-items: center;
     gap: 20px;
-    padding-top: 22px;
-    border-top: 1px solid #d7c4a225;
+    padding-top: 18px;
+    border-top: 1px solid #d7c4a240;
     font-size: 9px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #b8b1a4;
+    color: #d7cebd;
 }
 .scroll-cue {
     display: flex;
@@ -248,37 +252,79 @@
 }
 .scroll-cue span {
     font-size: 24px;
-    color: #e3d5bd;
 }
 .scene-controls {
     display: none;
     align-items: center;
-    gap: 5px;
+    gap: 18px;
     letter-spacing: 0;
     text-transform: none;
 }
 .scene-ready .scene-controls {
     display: flex;
 }
-.scene-controls > span {
-    margin-right: 8px;
-    font-size: 10px;
-}
 .scene-controls button {
-    min-height: 36px;
-    padding: 8px 11px;
-    border: 1px solid #ccb58b33;
+    min-height: 44px;
+    padding: 8px 12px;
+    border: 1px solid #ccb58b55;
     font-size: 10px;
     cursor: pointer;
 }
-.scene-controls button[aria-pressed='true'] {
-    color: #f2e5ce;
-    background: #d8bd8b1a;
-    border-color: #b69b6a88;
+.scene-controls button[hidden] {
+    display: none;
 }
-.scene-controls [data-scene-pause] {
-    border-color: transparent;
-    margin-left: 5px;
+.scene-progress {
+    width: 60px;
+    height: 1px;
+    background: #ccb58b55;
+}
+.scene-progress i {
+    display: block;
+    height: 1px;
+    width: 100%;
+    background: #e7c48e;
+    transform: scaleX(var(--room-light));
+    transform-origin: left;
+}
+.scene-static .architecture-sticky {
+    position: relative;
+}
+.scene-static .room-on {
+    opacity: 1;
+}
+.scene-static .pendant-contact {
+    display: none;
+}
+.wood-screen {
+    display: none;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+.motion-ready .wood-screen {
+    display: flex;
+    perspective: 1200px;
+}
+.wood-screen i {
+    display: block;
+    width: 25%;
+    height: 100%;
+    transform-origin: left;
+    background:
+        linear-gradient(
+            90deg,
+            #130b0480,
+            transparent 25%,
+            #a0703030 70%,
+            #130b0499
+        ),
+        url('/images/showcase/pendant-room-off.webp') 9% 35% / 900% auto;
+    border-right: 1px solid #b18a5640;
+    transform: rotateY(calc(var(--screen-open, 1) * -92deg));
+    opacity: calc(1 - var(--screen-open, 1));
+}
+[data-wood-reveal]:focus-visible .wood-screen {
+    visibility: hidden;
 }
 .studio-strip {
     padding: 23px 6vw;
@@ -765,34 +811,7 @@
 .champion-home > footer {
     border-top: 1px solid #dad1bb22;
 }
-@media (min-width: 1600px) {
-    .architecture-copy {
-        width: 43%;
-    }
-}
 @media (max-width: 1100px) {
-    .hero-coordinate {
-        display: none;
-    }
-    .architecture-copy {
-        width: 50%;
-        padding-top: 180px;
-    }
-    .architecture-copy h1 {
-        font-size: 57px;
-    }
-    .architecture-scene {
-        inset: 140px -8% 75px 43%;
-    }
-    .hero-actions {
-        gap: 15px;
-    }
-    .hero-actions .studio-text-link {
-        display: none;
-    }
-    .scene-caption {
-        bottom: 105px;
-    }
     .material-image {
         min-height: 550px;
     }
@@ -809,88 +828,81 @@
     }
 }
 @media (max-width: 900px) {
-    .architecture-hero {
-        height: auto;
-        min-height: 0;
-    }
     .architecture-sticky {
-        height: auto;
-        min-height: 960px;
-        position: relative;
+        min-height: 780px;
+    }
+    .architecture-hero.scene-ready:not(.scene-static) {
+        height: calc(780px + 130svh);
+    }
+    .architecture-scene {
+        top: 360px;
+    }
+    .room-plate {
+        object-position: 68% 50%;
+        mask-image: linear-gradient(to bottom, transparent, #000 110px);
+    }
+    .hero-atmosphere {
+        background: linear-gradient(
+            180deg,
+            #17130eb8,
+            #17130ea6 35%,
+            transparent 63%,
+            #17130edd 100%
+        );
     }
     .architecture-copy {
         width: auto;
-        padding: 125px 24px 0;
+        padding: 118px 24px 0;
+        max-width: 570px;
     }
     .architecture-copy h1 {
-        font-size: clamp(42px, 10.6vw, 64px);
-        max-width: 510px;
+        font-size: clamp(39px, 9.8vw, 62px);
+        max-width: 490px;
         margin-bottom: 20px;
     }
     .architecture-copy .studio-eyebrow {
         font-size: 8px;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
     }
     .hero-description {
-        max-width: 340px;
+        max-width: 290px;
         font-size: 12px;
     }
     .hero-actions {
-        margin-top: 24px;
+        gap: 14px;
+        margin-top: 22px;
     }
-    .hero-bengali {
+    .hero-actions .studio-text-link {
+        font-size: 10px;
+    }
+    .hero-bengali,
+    .hero-coordinate {
         display: none;
-    }
-    .architecture-scene {
-        inset: 440px -12% 135px -12%;
     }
     .scene-caption {
         left: 24px;
         right: auto;
         bottom: 98px;
-        padding-left: 12px;
     }
     .scene-caption p {
-        font-size: 18px;
-        display: inline;
+        font-size: 21px;
     }
     .scene-caption p br {
         display: none;
-    }
-    .scene-caption .studio-eyebrow {
-        display: none;
-    }
-    .scene-disclaimer {
-        margin-top: 5px;
-        font-size: 8px;
-    }
-    .scene-detail {
-        position: absolute;
-        bottom: 0;
-        left: 220px;
-        width: 110px;
-        font-size: 9px;
     }
     .hero-bottom {
         left: 24px;
         right: 24px;
         bottom: 20px;
-        padding-top: 15px;
+        padding-top: 12px;
+        gap: 8px;
     }
     .scroll-cue {
+        font-size: 8px;
+        gap: 10px;
+    }
+    .scene-progress {
         display: none;
-    }
-    .scene-controls {
-        flex-wrap: wrap;
-        gap: 3px;
-    }
-    .scene-controls > span {
-        font-size: 9px;
-        margin-right: 3px;
-    }
-    .scene-controls button {
-        font-size: 9px;
-        padding: 8px;
     }
     .studio-strip {
         gap: 14px;
@@ -1214,32 +1226,6 @@
         display: none;
     }
 }
-.scene-caption {
-    background: #211e19b8;
-    backdrop-filter: blur(12px);
-    padding: 16px 20px;
-    border: 1px solid #c5b59033;
-}
-@media (max-width: 900px) {
-    .scene-caption {
-        background: transparent;
-        backdrop-filter: none;
-        border: 0;
-        border-left: 1px solid #b8a07866;
-        padding: 0 0 0 12px;
-    }
-}
-@media (max-height: 740px) and (min-width: 901px) {
-    .architecture-copy {
-        padding-top: 150px;
-    }
-    .architecture-copy h1 {
-        font-size: clamp(42px, 4.8vw, 65px);
-    }
-    .hero-bengali {
-        display: none;
-    }
-}
 .champion-home #primary-nav.nav-scrolled {
     background: #211e19f5;
     backdrop-filter: blur(16px);
@@ -1249,8 +1235,46 @@
     justify-content: center;
     gap: 12px;
 }
-@media (min-width: 1101px) {
+
+@media (prefers-reduced-motion: reduce) {
+    .architecture-hero.scene-ready:not(.scene-static) {
+        height: auto;
+    }
+    .architecture-scene canvas,
+    .pendant-contact,
+    .wood-screen,
+    .scene-controls {
+        display: none !important;
+    }
+    .room-on {
+        opacity: 1;
+    }
+}
+@media (max-height: 740px) and (min-width: 901px) {
     .architecture-copy {
-        width: 43%;
+        padding-top: 135px;
+    }
+    .architecture-copy h1 {
+        font-size: clamp(40px, 4.6vw, 65px);
+    }
+    .hero-bengali {
+        display: none;
+    }
+}
+@media (max-width: 380px) {
+    .hero-actions {
+        gap: 10px;
+    }
+    .hero-actions .studio-button {
+        padding: 14px 12px;
+        gap: 12px;
+        font-size: 10px;
+    }
+    .hero-actions .studio-text-link {
+        gap: 8px;
+        font-size: 9px;
+    }
+    .scene-caption p {
+        font-size: 18px;
     }
 }

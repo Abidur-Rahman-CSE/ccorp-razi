@@ -1,15 +1,17 @@
 <x-layouts.public :title="$title" :metaDescription="$metaDescription" :faqs="$faqs">
     <x-slot:head>
-        <link rel="preload" as="image" href="{{ asset('images/showcase/hero_penthouse_dhaka.jpg') }}" fetchpriority="high">
+        <link rel="preload" as="image" href="{{ asset('images/showcase/pendant-room-off.webp') }}" fetchpriority="high">
     </x-slot:head>
 
-    <section class="architecture-hero" aria-label="Introduction" data-lighting="day">
+    <section class="architecture-hero" aria-label="Introduction">
         <div class="architecture-sticky">
-            <div class="hero-atmosphere" aria-hidden="true"></div>
-            <div class="architecture-scene" data-architectural-scene data-scene-state="loading">
-                <img class="scene-fallback" src="{{ asset('images/showcase/hero_penthouse_dhaka.jpg') }}" alt="Warm interior with natural stone, timber and soft seating" width="1536" height="1024" fetchpriority="high">
+            <div class="architecture-scene" data-architectural-scene data-scene-state="loading" data-model="{{ asset('models/pendant/pendant.gltf') }}">
+                <img class="room-plate room-off" data-room-off src="{{ asset('images/showcase/pendant-room-off.webp') }}" alt="A quiet sitting room with walnut, travertine and linen, overlooking Dhaka at dusk" width="1536" height="1024" fetchpriority="high">
+                <img class="room-plate room-on" data-room-on src="{{ asset('images/showcase/pendant-room-on.webp') }}" alt="" aria-hidden="true" width="1536" height="1024" decoding="async">
+                <span class="pendant-contact" aria-hidden="true"></span>
                 <canvas aria-hidden="true"></canvas>
             </div>
+            <div class="hero-atmosphere" aria-hidden="true"></div>
             <div class="architecture-copy">
                 <p class="studio-eyebrow"><span class="status-dot"></span> Champion Interior Design · Dhaka</p>
                 <h1>Spaces Designed Around the Way You Live.</h1>
@@ -21,17 +23,14 @@
                 <p class="hero-bengali" lang="bn">আপনার ভাবনা, আমাদের নকশা।</p>
             </div>
             <div class="scene-caption">
-                <span class="studio-eyebrow">01 / The living space</span>
+                <span class="studio-eyebrow" data-scene-chapter>01 / A considered detail</span>
                 <p>A study in light<br> and quiet living.</p>
-                <span class="scene-disclaimer">Interactive design concept</span>
-                <button type="button" class="scene-detail" data-scene-detail aria-pressed="false">Explore the details ↗</button>
+                <span class="scene-disclaimer">An imagined interior · A study in atmosphere</span>
             </div>
             <div class="hero-bottom">
                 <a href="#projects" class="scroll-cue"><span aria-hidden="true">↓</span> Scroll to discover</a>
-                <div class="scene-controls" role="group" aria-label="Interior lighting">
-                    <span>Set the mood</span>
-                    <button type="button" data-scene-light="day" aria-pressed="true">Daylight</button>
-                    <button type="button" data-scene-light="dusk" aria-pressed="false">Dusk</button>
+                <div class="scene-controls" role="group" aria-label="Animation preferences">
+                    <span class="scene-progress" aria-hidden="true"><i></i></span>
                     <button type="button" data-scene-pause aria-pressed="false">Pause motion</button>
                 </div>
                 <span class="hero-coordinate">23.8103° N &nbsp; 90.4125° E</span>
@@ -51,8 +50,11 @@
         <div class="editorial-projects">
             @foreach($featuredProjects as $project)
                 <article class="editorial-project {{ $loop->first ? 'project-wide' : '' }}">
-                    <a href="{{ route('projects.show', $project['slug']) }}" class="project-visual" aria-label="View {{ $project['title'] }}">
+                    <a href="{{ route('projects.show', $project['slug']) }}" class="project-visual" @if($loop->first) data-wood-reveal @endif aria-label="View {{ $project['title'] }}">
                         <img src="{{ asset($project['cover_image']) }}" alt="{{ $project['title'] }} — interior design portfolio" loading="lazy" width="1536" height="1024">
+                        @if($loop->first)
+                            <span class="wood-screen" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                        @endif
                         <span class="project-index">0{{ $loop->iteration }}</span><span class="project-open" aria-hidden="true">↗</span>
                     </a>
                     <div class="project-description"><div><p class="studio-eyebrow">{{ $project['category'] }}</p><h3><a href="{{ route('projects.show', $project['slug']) }}">{{ $project['title'] }}</a></h3></div><span>{{ $project['location'] }}</span></div>
