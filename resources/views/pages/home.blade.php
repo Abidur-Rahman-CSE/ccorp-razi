@@ -8,6 +8,7 @@
             <div class="architecture-scene" data-architectural-scene data-scene-state="loading" data-model="{{ asset('models/pendant/pendant.gltf') }}">
                 <img class="room-plate room-off" data-room-off src="{{ asset('images/showcase/pendant-room-off.webp') }}" alt="A quiet sitting room with walnut, travertine and linen, overlooking Dhaka at dusk" width="1536" height="1024" fetchpriority="high">
                 <img class="room-plate room-on" data-room-on src="{{ asset('images/showcase/pendant-room-on.webp') }}" alt="" aria-hidden="true" width="1536" height="1024" decoding="async">
+                <img class="room-plate detail-plate" data-detail-plate src="{{ asset('images/showcase/pendant-detail.webp') }}" alt="Walnut wall and sculptural travertine console with a ceramic vase" width="1536" height="1024" decoding="async">
                 <span class="pendant-contact" aria-hidden="true"></span>
                 <canvas aria-hidden="true"></canvas>
             </div>
@@ -22,6 +23,13 @@
                 </div>
                 <p class="hero-bengali" lang="bn">আপনার ভাবনা, আমাদের নকশা।</p>
             </div>
+            <section class="atmosphere-chapter" aria-labelledby="atmosphere-title" aria-hidden="true" inert>
+                <p class="studio-eyebrow">02 / The art of atmosphere</p>
+                <h2 id="atmosphere-title">A little light.<br><em>A different feeling.</em></h2>
+                <p>Beautiful spaces begin with thoughtful details. The grain of walnut. The softness of stone. A warm glow, exactly where it belongs.</p>
+                <a class="studio-text-link" href="#projects">Explore our spaces <span aria-hidden="true">↗</span></a>
+                <div class="atmosphere-materials"><span>01 — Walnut</span><span>02 — Travertine</span><span>03 — Warm light</span></div>
+            </section>
             <div class="scene-caption">
                 <span class="studio-eyebrow" data-scene-chapter>01 / A considered detail</span>
                 <p>A study in light<br> and quiet living.</p>

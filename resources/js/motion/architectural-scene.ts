@@ -10,6 +10,11 @@ export function initArchitecturalScene(host: HTMLElement): void {
     const onPlate = host.querySelector<HTMLImageElement>('[data-room-on]');
     if (!hero || !canvas || !offPlate || !onPlate) return;
 
+    const detailPlate = host.querySelector<HTMLImageElement>(
+        '[data-detail-plate]',
+    );
+    const introCopy = hero.querySelector<HTMLElement>('.architecture-copy');
+    const detailCopy = hero.querySelector<HTMLElement>('.atmosphere-chapter');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const abort = new AbortController();
     const { signal } = abort;
@@ -87,15 +92,46 @@ export function initArchitecturalScene(host: HTMLElement): void {
         lastTime = time;
         progress += (target - progress) * (1 - Math.exp(-delta / 65));
         if (Math.abs(target - progress) < 0.0001) progress = target;
-        const travel = ease(progress, 0.07, 0.62);
-        const light = ease(progress, 0.65, 0.85);
+        const roomProgress = clamp(progress / 0.48, 0, 1);
+        const handover = ease(progress, 0.48, 0.67);
+        const departure = ease(progress, 0.88, 1);
+        const detailLight = ease(progress, 0.68, 0.78);
+        const travel = ease(roomProgress, 0.07, 0.62);
+        const light =
+            ease(roomProgress, 0.65, 0.85) * (1 - ease(progress, 0.46, 0.57));
+        const showDetail = !isStatic && progress > 0.565;
+        hero!.style.setProperty(
+            '--detail-reveal',
+            String(isStatic ? 0 : handover),
+        );
+        hero!.style.setProperty(
+            '--detail-light',
+            String(detailLight * (1 - ease(progress, 0.86, 0.98))),
+        );
+        hero!.style.setProperty(
+            '--intro-opacity',
+            String(isStatic ? 1 : 1 - ease(progress, 0.48, 0.56)),
+        );
+        hero!.style.setProperty(
+            '--detail-copy',
+            String(isStatic ? 0 : ease(progress, 0.56, 0.65)),
+        );
+        if (introCopy) {
+            introCopy.inert = showDetail;
+            introCopy.setAttribute('aria-hidden', String(showDetail));
+        }
+        if (detailCopy) {
+            detailCopy.inert = !showDetail;
+            detailCopy.setAttribute('aria-hidden', String(!showDetail));
+        }
         hero!.style.setProperty('--room-light', String(light));
         hero!.dataset.sceneProgress = progress.toFixed(3);
+        hero!.style.setProperty('--story-progress', String(progress));
         if (chapter)
             chapter.textContent =
-                progress < 0.62
+                roomProgress < 0.62
                     ? '01 / A considered detail'
-                    : progress < 0.85
+                    : roomProgress < 0.85
                       ? '02 / A warmer atmosphere'
                       : '03 / A space comes to life';
 
@@ -107,25 +143,30 @@ export function initArchitecturalScene(host: HTMLElement): void {
             const cropX = (width - imageWidth) * (width < 901 ? 0.68 : 0.5);
             const cropY = (height - imageHeight) * 0.5;
             const anchorX = 1060 * imageScale + cropX;
-            const anchorY = 120 * imageScale + cropY;
-            const finalHeight = 260 * imageScale;
+            const anchorY =
+                THREE.MathUtils.lerp(120, 90, handover) * imageScale + cropY;
+            const finalHeight =
+                THREE.MathUtils.lerp(260, 290, handover) * imageScale;
             const closeHeight = Math.min(height * 0.89, finalHeight * 2.9);
-            const projectedHeight = THREE.MathUtils.lerp(
-                closeHeight,
-                finalHeight,
-                travel,
-            );
+            const projectedHeight =
+                THREE.MathUtils.lerp(closeHeight, finalHeight, travel) *
+                (1 + Math.sin(handover * Math.PI) * 0.48);
             const tangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
             const objectScale = (finalHeight * (2 * tangent * 5)) / height;
             const depth =
                 (objectScale * height) / (2 * tangent * projectedHeight);
             const pixelToWorld = (2 * tangent * depth) / height;
-            const x = THREE.MathUtils.lerp(
-                width * (width < 901 ? 0.76 : 0.73),
-                anchorX,
-                travel,
-            );
-            const y = THREE.MathUtils.lerp(-height * 0.13, anchorY, travel);
+            const x =
+                Math.sin(handover * Math.PI) * width * 0.075 +
+                THREE.MathUtils.lerp(
+                    width * (width < 901 ? 0.76 : 0.73),
+                    anchorX,
+                    travel,
+                );
+            const y =
+                THREE.MathUtils.lerp(-height * 0.13, anchorY, travel) +
+                Math.sin(handover * Math.PI) * height * 0.055 -
+                departure * height * 1.25;
             model.position.set(
                 (x - width / 2) * pixelToWorld,
                 (height / 2 - y) * pixelToWorld,
@@ -134,18 +175,26 @@ export function initArchitecturalScene(host: HTMLElement): void {
             model.scale.setScalar(objectScale);
             model.rotation.set(
                 0.1 * (1 - travel),
-                -0.55 * (1 - travel),
-                -0.045 * (1 - travel),
+                -0.55 * (1 - travel) + Math.sin(handover * Math.PI) * 0.45,
+                -0.045 * (1 - travel) +
+                    Math.sin(handover * Math.PI) * 0.08 -
+                    departure * 0.06,
             );
             luminousMaterials.forEach((material) => {
-                material.emissiveIntensity = light * 1.65;
+                material.emissiveIntensity =
+                    (light + detailLight * (1 - ease(progress, 0.85, 0.92))) *
+                    1.65;
             });
             renderer.render(scene, camera);
             host.style.setProperty('--pendant-x', `${anchorX}px`);
             host.style.setProperty('--pendant-y', `${anchorY}px`);
             host.style.setProperty(
                 '--pendant-seated',
-                String(ease(progress, 0.55, 0.63)),
+                String(
+                    ease(roomProgress, 0.55, 0.63) *
+                        (1 - Math.sin(handover * Math.PI)) *
+                        (1 - departure),
+                ),
             );
         }
         if (screen) {
@@ -268,6 +317,7 @@ export function initArchitecturalScene(host: HTMLElement): void {
             new GLTFLoader().loadAsync(host.dataset.model!),
             offPlate.decode(),
             onPlate.decode(),
+            detailPlate?.decode(),
         ])
             .then(([gltf]) => {
                 if (disposed || failed) {

@@ -88,7 +88,7 @@
     background: #211e19;
 }
 .architecture-hero.scene-ready:not(.scene-static) {
-    height: 245svh;
+    height: 375svh;
 }
 .architecture-sticky {
     position: sticky;
@@ -283,7 +283,7 @@
     height: 1px;
     width: 100%;
     background: #e7c48e;
-    transform: scaleX(var(--room-light));
+    transform: scaleX(var(--story-progress, 0));
     transform-origin: left;
 }
 .scene-static .architecture-sticky {
@@ -832,7 +832,7 @@
         min-height: 780px;
     }
     .architecture-hero.scene-ready:not(.scene-static) {
-        height: calc(780px + 130svh);
+        height: calc(780px + 245svh);
     }
     .architecture-scene {
         top: 360px;
@@ -1276,5 +1276,84 @@
     }
     .scene-caption p {
         font-size: 18px;
+    }
+}
+
+/* Both photographic chapters share one camera and one pendant canvas. */
+.detail-plate {
+    opacity: var(--detail-reveal, 0);
+    filter: brightness(calc(0.62 + var(--detail-light, 0) * 0.38));
+}
+.architecture-copy,
+.scene-caption {
+    opacity: var(--intro-opacity, 1);
+}
+.atmosphere-chapter {
+    position: absolute;
+    z-index: 2;
+    top: clamp(155px, 23vh, 260px);
+    left: 6vw;
+    width: 39%;
+    opacity: var(--detail-copy, 0);
+    visibility: hidden;
+    transform: translateY(calc((1 - var(--detail-copy, 0)) * 24px));
+}
+.atmosphere-chapter[aria-hidden='false'] {
+    visibility: visible;
+}
+.atmosphere-chapter .studio-eyebrow {
+    color: #dfc39a;
+    margin-bottom: 28px;
+}
+.champion-home .atmosphere-chapter h2 {
+    font-size: clamp(42px, 5.4vw, 82px);
+    margin-bottom: 28px;
+}
+.champion-home .atmosphere-chapter h2 em {
+    color: #d7b98b;
+}
+.atmosphere-chapter > p:not(.studio-eyebrow) {
+    max-width: 315px;
+    font-size: 13px;
+    line-height: 1.9;
+    color: #d1c6b4;
+}
+.atmosphere-chapter > a {
+    margin-top: 18px;
+}
+.atmosphere-materials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 44px;
+    padding-top: 22px;
+    border-top: 1px solid #c9b38740;
+    color: #cfb58f;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+}
+@media (max-width: 900px) {
+    .atmosphere-chapter {
+        top: 120px;
+        left: 24px;
+        right: 24px;
+        width: auto;
+    }
+    .champion-home .atmosphere-chapter h2 {
+        font-size: clamp(38px, 8vw, 58px);
+        margin-bottom: 20px;
+    }
+    .atmosphere-chapter .studio-eyebrow {
+        font-size: 8px;
+        margin-bottom: 20px;
+    }
+    .atmosphere-chapter > p:not(.studio-eyebrow) {
+        font-size: 12px;
+        max-width: 290px;
+    }
+    .atmosphere-materials {
+        margin-top: 24px;
+        gap: 14px;
+        font-size: 8px;
     }
 }
