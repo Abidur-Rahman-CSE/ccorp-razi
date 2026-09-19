@@ -8,170 +8,232 @@
         <link rel="preload" as="image" href="{{ asset($project['cover_image']) }}" fetchpriority="high">
     </x-slot:head>
 
-    <article class="py-12 lg:py-20 px-6 lg:px-12 max-w-7xl mx-auto">
+    <article class="inner-page-wrap">
         {{-- Breadcrumbs --}}
-        <nav aria-label="Breadcrumb" class="mb-8 text-[11px] uppercase tracking-[0.16em] text-[#676660]">
-            <ol class="flex items-center gap-2">
-                <li><a href="{{ route('home') }}" class="hover:text-[#AD8753] transition-colors">Home</a></li>
-                <li class="text-[#AD8753]">/</li>
-                <li><a href="{{ route('projects.index') }}" class="hover:text-[#AD8753] transition-colors">Projects</a></li>
-                <li class="text-[#AD8753]">/</li>
-                <li class="text-[#1E211F] font-medium" aria-current="page">{{ $project['title'] }}</li>
-            </ol>
+        <nav aria-label="Breadcrumb" class="studio-breadcrumb">
+            <a href="{{ route('home') }}">Home</a>
+            <span class="sep" aria-hidden="true">/</span>
+            <a href="{{ route('projects.index') }}">Projects</a>
+            <span class="sep" aria-hidden="true">/</span>
+            <span class="current" aria-current="page">{{ $project['title'] }}</span>
         </nav>
 
         {{-- Project Header --}}
-        <header class="max-w-4xl mb-12">
-            <div class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-[#AD8753] font-semibold mb-3">
-                <span class="w-1.5 h-1.5 bg-[#AD8753]"></span>
-                {{ $project['category'] }} • {{ $project['location'] }}
+        <header class="inner-header">
+            <div class="studio-eyebrow">
+                <span class="status-dot"></span>
+                <span>{{ $project['category'] }} • {{ $project['location'] }}</span>
             </div>
-            <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal tracking-[-0.03em] text-[#1E211F] leading-[1.1]">
-                {{ $project['title'] }}
-            </h1>
-            <p class="mt-4 text-lg sm:text-xl text-[#676660] font-light leading-relaxed">
+            <h1>{{ $project['title'] }}</h1>
+            <p class="inner-header-lead">
                 {{ $project['tagline'] }}
             </p>
         </header>
 
         {{-- Hero Showcase Photography --}}
-        <div class="w-full aspect-[16/9] md:aspect-[21/10] overflow-hidden bg-[#EFEAE2] hairline-all mb-14">
+        <div class="w-full aspect-[16/9] md:aspect-[21/10] overflow-hidden bg-[#efeae2] border border-[#30291e15] mb-12 shadow-sm">
             <img src="{{ asset($project['cover_image']) }}" 
-                 alt="{{ $project['title'] }} - Champion Interior Design" 
+                 alt="{{ $project['title'] }} — architectural interior view" 
                  fetchpriority="high"
                  width="1600"
                  height="900"
                  class="w-full h-full object-cover">
         </div>
 
-        {{-- Project Specifications Bar --}}
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 p-8 bg-white hairline-all mb-16 text-[13px]">
-            <div>
-                <span class="text-[10px] uppercase tracking-[0.18em] text-[#AD8753] block font-semibold mb-1">Location</span>
-                <strong class="text-[#1E211F] font-medium">{{ $project['location'] }}</strong>
+        {{-- Compact Specifications Ribbon --}}
+        <div class="specs-ribbon" aria-label="Project Specifications">
+            <div class="spec-unit">
+                <span class="spec-label">Enclave Location</span>
+                <span class="spec-value">{{ $project['location'] }}</span>
             </div>
-            <div>
-                <span class="text-[10px] uppercase tracking-[0.18em] text-[#AD8753] block font-semibold mb-1">Scale / Area</span>
-                <strong class="text-[#1E211F] font-medium">{{ $project['area'] }}</strong>
+            <div class="spec-unit">
+                <span class="spec-label">Floor Plate / Scale</span>
+                <span class="spec-value">{{ $project['area'] }}</span>
             </div>
-            <div>
-                <span class="text-[10px] uppercase tracking-[0.18em] text-[#AD8753] block font-semibold mb-1">Year of Handover</span>
-                <strong class="text-[#1E211F] font-medium">{{ $project['year'] }}</strong>
+            <div class="spec-unit">
+                <span class="spec-label">Year Completed</span>
+                <span class="spec-value">{{ $project['year'] }}</span>
             </div>
-            <div>
-                <span class="text-[10px] uppercase tracking-[0.18em] text-[#AD8753] block font-semibold mb-1">Project Scope</span>
-                <strong class="text-[#1E211F] font-medium">{{ $project['scope'] }}</strong>
+            <div class="spec-unit">
+                <span class="spec-label">Atelier Scope</span>
+                <span class="spec-value">{{ $project['scope'] }}</span>
             </div>
         </div>
 
         {{-- Case Study Narrative: Brief, Constraints, Scope, Outcome --}}
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 mb-20">
-            <div class="lg:col-span-7 space-y-10">
-                {{-- 1. Brief --}}
-                <div>
-                    <span class="text-[10px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold block mb-1">01 / The Brief</span>
-                    <h2 class="font-serif text-2xl lg:text-3xl text-[#1E211F] mb-4 font-normal">Project Brief</h2>
-                    <p class="text-[15px] leading-relaxed text-[#676660] font-light">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 mb-24">
+            <div class="lg:col-span-8 space-y-12">
+                {{-- 01 / The Brief --}}
+                <section class="narrative-block">
+                    <span class="narrative-num">01 / The Spatial Brief</span>
+                    <h2 class="narrative-title">Project Overview & Vision</h2>
+                    <p class="narrative-prose">
                         {{ $project['summary'] }}
                     </p>
-                </div>
+                </section>
 
-                {{-- 2. Constraints --}}
-                <div class="pt-8 hairline-t">
-                    <span class="text-[10px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold block mb-1">02 / Constraints</span>
-                    <h2 class="font-serif text-2xl lg:text-3xl text-[#1E211F] mb-4 font-normal">Site Constraints & Challenges</h2>
-                    <p class="text-[15px] leading-relaxed text-[#676660] font-light">
+                {{-- 02 / Constraints & Challenges --}}
+                <section class="narrative-block">
+                    <span class="narrative-num">02 / Site Constraints</span>
+                    <h2 class="narrative-title">Architectural Challenges & Acoustic Context</h2>
+                    <p class="narrative-prose">
                         {{ $project['challenge'] }}
                     </p>
-                </div>
+                </section>
 
-                {{-- 3. Scope of Work --}}
-                <div class="pt-8 hairline-t">
-                    <span class="text-[10px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold block mb-1">03 / Scope</span>
-                    <h2 class="font-serif text-2xl lg:text-3xl text-[#1E211F] mb-4 font-normal">Scope of Work</h2>
-                    <p class="text-[15px] leading-relaxed text-[#676660] font-light mb-4">
-                        Turnkey execution scope: {{ $project['scope'] }}.
+                {{-- 03 / Scope of Work --}}
+                <section class="narrative-block">
+                    <span class="narrative-num">03 / Turnkey Execution</span>
+                    <h2 class="narrative-title">Scope of Work & Integrated Disciplines</h2>
+                    <p class="narrative-prose mb-6">
+                        Complete single-source execution covering: {{ $project['scope'] }}.
                     </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         @foreach($project['services'] as $service)
-                            <div class="flex items-center gap-2 text-[13px] text-[#1E211F] bg-[#F7F5F0] px-3.5 py-2.5 border border-black/5">
-                                <span class="text-[#AD8753]">✦</span>
+                            <div class="flex items-center gap-3 text-[13px] text-[#1e211f] bg-[#f1eee7] px-4 py-3 border border-[#30291e12]">
+                                <span class="text-[#c0a57c] font-serif">✦</span>
                                 <span>{{ $service }}</span>
                             </div>
                         @endforeach
                     </div>
-                </div>
+                </section>
 
-                {{-- 4. Outcome --}}
-                <div class="pt-8 hairline-t">
-                    <span class="text-[10px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold block mb-1">04 / Outcome</span>
-                    <h2 class="font-serif text-2xl lg:text-3xl text-[#1E211F] mb-4 font-normal">Design Outcome & Execution</h2>
-                    <p class="text-[15px] leading-relaxed text-[#676660] font-light">
+                {{-- 04 / Outcome & Craft --}}
+                <section class="narrative-block">
+                    <span class="narrative-num">04 / Delivered Outcome</span>
+                    <h2 class="narrative-title">Spatial Harmony & Refined Detailing</h2>
+                    <p class="narrative-prose">
                         {{ $project['solution'] }}
                     </p>
-                </div>
+                </section>
             </div>
 
             {{-- Sidebar: Materiality & Inquiries --}}
-            <div class="lg:col-span-5 space-y-8">
-                <div class="bg-[#EFEAE2]/60 p-8 hairline-all">
-                    <h3 class="text-[11px] uppercase tracking-[0.20em] text-[#AD8753] font-semibold mb-4">
-                        Materiality & Finishes
-                    </h3>
-                    <ul class="space-y-2.5 text-[13px] text-[#1E211F]">
+            <aside class="lg:col-span-4 space-y-8">
+                <div class="bg-[#efeae2] p-8 border border-[#30291e15]">
+                    <div class="studio-eyebrow text-[#8d7859] mb-3">Architectural Finishes</div>
+                    <h3 class="font-serif text-2xl text-[#1e211f] font-normal mb-4">Material Palette</h3>
+                    <p class="text-[13px] text-[#676660] font-light leading-relaxed mb-4">
+                        Authentic natural surfaces curated to age gracefully and interact softly with natural tropical light.
+                    </p>
+                    <div class="material-chips">
                         @foreach($project['materials'] as $material)
-                            <li class="flex items-center gap-2">
-                                <span class="text-[#AD8753]">✦</span>
+                            <span class="material-chip">
+                                <span class="material-chip-bullet"></span>
                                 <span>{{ $material }}</span>
-                            </li>
+                            </span>
                         @endforeach
-                    </ul>
+                    </div>
                 </div>
 
-                {{-- Direct Studio Contact Card --}}
-                <div class="bg-[#1E211F] text-[#F7F5F0] p-8 hairline-all">
-                    <h4 class="font-serif text-xl text-white font-normal mb-2">Commission a Similar Project</h4>
-                    <p class="text-[13px] text-[#A1A09A] mb-6">
-                        Contact our Dhaka studio to discuss your residential, commercial, or renovation project.
+                {{-- Direct Atelier Contact Card --}}
+                <div class="bg-[#24251f] text-[#f1eee7] p-8 border border-[#30291e30]">
+                    <div class="studio-eyebrow text-[#c0a57c] mb-2">Private Consultation</div>
+                    <h4 class="font-serif text-2xl text-white font-normal mb-3">Commission a Similar Space</h4>
+                    <p class="text-[13px] text-[#b8b5a9] leading-relaxed mb-6">
+                        Speak directly with our studio team regarding spatial planning, 3D visualization, or turnkey execution in Dhaka.
                     </p>
-                    <a href="{{ route('contact') }}" 
-                       class="block w-full text-center py-3.5 bg-[#AD8753] text-[#1E211F] text-[11px] uppercase tracking-[0.18em] font-semibold hover:bg-white transition-colors">
-                        Start a Project
+                    <a href="{{ route('contact') }}" class="studio-button studio-button-light w-full justify-center">
+                        Book a Consultation <span aria-hidden="true">↗</span>
                     </a>
+                    <div class="mt-6 pt-5 border-t border-white/10 flex flex-col gap-2 text-[12px] text-[#b8b5a9]">
+                        <div class="flex items-center justify-between">
+                            <span>Direct phone:</span>
+                            <a href="tel:+8801715394444" class="text-white hover:text-[#c0a57c] font-medium">01715394444</a>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>WhatsApp:</span>
+                            <a href="https://wa.me/8801715394444" target="_blank" rel="noopener noreferrer" class="text-[#c0a57c] hover:text-white">Direct Chat ↗</a>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </aside>
         </div>
 
-        {{-- Project Gallery --}}
-        <section class="mb-24" aria-label="Project Visuals">
-            <div class="flex items-center justify-between mb-8">
-                <h2 class="font-serif text-3xl text-[#1E211F] font-normal">Project Gallery</h2>
-                <span class="text-[11px] uppercase tracking-[0.16em] text-[#676660]">Visual Documentation</span>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                @foreach($project['gallery'] as $galleryImage)
-                    <div class="overflow-hidden bg-[#EFEAE2] hairline-all aspect-[16/10] shadow-sm">
-                        <img src="{{ asset($galleryImage) }}" 
-                             alt="{{ $project['title'] }} architectural view" 
-                             loading="lazy" 
-                             width="800" 
-                             height="500" 
-                             class="w-full h-full object-cover">
+        {{-- Varied Editorial Project Gallery --}}
+        @if(!empty($project['gallery']))
+            <section class="mb-24 pt-16 border-t border-[#30291e20]" aria-label="Visual Documentation">
+                <div class="section-intro mb-10">
+                    <div>
+                        <div class="studio-eyebrow">Visual Documentation</div>
+                        <h2>Spatial Details & Perspective</h2>
                     </div>
-                @endforeach
-            </div>
-        </section>
+                    <div class="section-aside">
+                        <p>A closer study of craftsmanship, natural lighting, and millwork integration.</p>
+                    </div>
+                </div>
 
-        {{-- Related Projects --}}
-        @if(!empty($relatedProjects))
-            <section class="pt-16 hairline-t" aria-label="Related Works">
-                <h2 class="font-serif text-3xl text-[#1E211F] mb-8 font-normal">Related Studio Works</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    @foreach(array_slice($relatedProjects, 0, 2) as $related)
-                        <x-project-card :project="$related" />
+                    @foreach($project['gallery'] as $galleryImage)
+                        <div class="overflow-hidden bg-[#efeae2] border border-[#30291e15] aspect-[16/10]">
+                            <img src="{{ asset($galleryImage) }}" 
+                                 alt="{{ $project['title'] }} detail perspective" 
+                                 loading="lazy" 
+                                 width="1200" 
+                                 height="750" 
+                                 class="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.03]">
+                        </div>
                     @endforeach
                 </div>
             </section>
         @endif
+
+        {{-- Related Projects Showcase --}}
+        @if(!empty($relatedProjects))
+            <section class="pt-16 border-t border-[#30291e20]" aria-label="Related Works">
+                <div class="section-intro mb-10">
+                    <div>
+                        <div class="studio-eyebrow">Selected Monograph</div>
+                        <h2>Related Studio Works</h2>
+                    </div>
+                    <div class="section-aside">
+                        <a href="{{ route('projects.index') }}" class="studio-text-link">
+                            View All Projects <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="editorial-projects">
+                    @foreach(array_slice($relatedProjects, 0, 2) as $related)
+                        <article class="editorial-project">
+                            <a href="{{ route('projects.show', $related['slug']) }}" class="project-visual" aria-label="View {{ $related['title'] }}">
+                                <img src="{{ asset($related['cover_image']) }}" 
+                                     alt="{{ $related['title'] }}" 
+                                     loading="lazy" 
+                                     width="1200" 
+                                     height="800">
+                                <span class="project-index">{{ $related['location'] }}</span>
+                                <span class="project-open" aria-hidden="true">↗</span>
+                            </a>
+                            <div class="project-description">
+                                <div>
+                                    <div class="studio-eyebrow">{{ $related['category'] }} • {{ $related['year'] }}</div>
+                                    <h3>
+                                        <a href="{{ route('projects.show', $related['slug']) }}">
+                                            {{ $related['title'] }}
+                                        </a>
+                                    </h3>
+                                </div>
+                                <span class="text-right">{{ $related['area'] }}</span>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
+        {{-- Bottom Consultation CTA --}}
+        <div class="studio-cta-box">
+            <div>
+                <span class="studio-eyebrow text-[#c0a57c] block mb-2">Initiate Your Project</span>
+                <h3>Ready to discuss your <em>spatial brief?</em></h3>
+                <p>
+                    Schedule an on-site survey or studio briefing with Founder & CEO Mushfiqur Rahman Razi in Dhaka.
+                </p>
+            </div>
+            <a href="{{ route('contact') }}" class="studio-button studio-button-light shrink-0">
+                Book a Consultation <span aria-hidden="true">↗</span>
+            </a>
+        </div>
     </article>
 </x-layouts.public>
