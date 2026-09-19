@@ -1415,3 +1415,26 @@
         mask-image: linear-gradient(to bottom, transparent, #000 110px);
     }
 }
+
+/* Local lens glow: the room itself is still illuminated by its photographic plate. */
+.scene-ready:not(.scene-static) .architecture-scene::after {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+    left: var(--glow-x);
+    top: var(--glow-y);
+    width: var(--glow-size);
+    height: var(--glow-size);
+    transform: translate(-50%, -50%);
+    opacity: var(--glow-opacity, 0);
+    background: radial-gradient(
+        ellipse,
+        #fff2c9a0 0%,
+        #ffd98d75 16%,
+        #ffbe6540 32%,
+        #ffaa4220 48%,
+        transparent 70%
+    );
+    mix-blend-mode: screen;
+}

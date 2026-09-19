@@ -38,6 +38,8 @@ export function initArchitecturalScene(host: HTMLElement): void {
     const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 30);
     camera.position.z = 5;
     const luminousMaterials: THREE.MeshStandardMaterial[] = [];
+    const glassMaterials: THREE.MeshStandardMaterial[] = [];
+    const bulbCenter = new THREE.Vector3();
     const clamp = THREE.MathUtils.clamp;
     const ease = (value: number, from: number, to: number) =>
         THREE.MathUtils.smoothstep(value, from, to);
@@ -176,10 +178,29 @@ export function initArchitecturalScene(host: HTMLElement): void {
                 -0.25 + opening * 0.55 + settle * 0.18,
                 0.018 * Math.sin(opening * Math.PI * 2),
             );
+            const illumination = inDetail ? 1 : light;
             luminousMaterials.forEach((material) => {
-                material.emissiveIntensity =
-                    0.12 + (inDetail ? 1 : light) * 0.9;
+                material.emissiveIntensity = 0.03 + illumination * 3.2;
             });
+            glassMaterials.forEach((material) => {
+                material.emissiveIntensity = illumination * 0.24;
+            });
+            // Project the bulb center so the halo follows the model's scale and tilt.
+            model.updateMatrixWorld(true);
+            camera.updateMatrixWorld();
+            bulbCenter.set(0, -0.83, 0);
+            model.localToWorld(bulbCenter);
+            bulbCenter.project(camera);
+            host.style.setProperty(
+                '--glow-x',
+                `${(bulbCenter.x * 0.5 + 0.5) * width}px`,
+            );
+            host.style.setProperty(
+                '--glow-y',
+                `${(-bulbCenter.y * 0.5 + 0.5) * height}px`,
+            );
+            host.style.setProperty('--glow-size', `${finalHeight * 0.85}px`);
+            host.style.setProperty('--glow-opacity', String(illumination));
             renderer.render(scene, camera);
             host.style.setProperty('--pendant-x', `${anchorX}px`);
             host.style.setProperty('--pendant-y', `${anchorY}px`);
@@ -332,6 +353,9 @@ export function initArchitecturalScene(host: HTMLElement): void {
                                 material.emissive.set('#ffd39a');
                                 material.emissiveIntensity = 0;
                                 luminousMaterials.push(material);
+                            } else if (material.name.includes('glass')) {
+                                material.emissive.set('#ffb85c');
+                                glassMaterials.push(material);
                             }
                         },
                     );
