@@ -92,29 +92,27 @@ export function initArchitecturalScene(host: HTMLElement): void {
         lastTime = time;
         progress += (target - progress) * (1 - Math.exp(-delta / 65));
         if (Math.abs(target - progress) < 0.0001) progress = target;
-        const roomProgress = clamp(progress / 0.48, 0, 1);
-        // The foreground hides the photographic cut while the pendant travels in front.
-        const crossing = ease(progress, 0.44, 0.74);
-        const inDetail = progress >= 0.59;
-        const transfer = ease(progress, 0.43, 0.79);
-        const arc = Math.sin(transfer * Math.PI);
-        const landing = clamp((progress - 0.79) / 0.14, 0, 1);
-        const landingSway =
-            Math.sin(landing * Math.PI * 2) * Math.pow(1 - landing, 2) * 0.018;
-        const approach = ease(progress, 0.4, 0.59);
-        const settle = ease(progress, 0.59, 0.78);
+        const opening = ease(progress, 0, 0.3);
+        // The close timber plane conceals both the photographic cut and ceiling registration.
+        const crossing = ease(progress, 0.43, 0.61);
+        const inDetail = progress >= 0.52;
+        const approach = ease(progress, 0.2, 0.52);
+        const settle = ease(progress, 0.52, 0.7);
         const plateScale = inDetail
-            ? 1.035 - settle * 0.015
-            : 1 + approach * 0.035;
+            ? 1.075 - settle * 0.055
+            : 1 + opening * 0.055 + approach * 0.02;
         const plateShift = inDetail ? 0.012 * (1 - settle) : -0.012 * approach;
-        const travel = ease(roomProgress, 0.07, 0.62);
-        const light = ease(roomProgress, 0.65, 0.85);
-        const showDetail = !isStatic && progress > 0.78;
+        const light = ease(progress, 0.025, 0.3);
+        const showDetail = !isStatic && progress > 0.69;
+        hero!.style.setProperty('--entrance', String(isStatic ? 1 : opening));
         hero!.style.setProperty(
             '--detail-reveal',
             String(!isStatic && inDetail ? 1 : 0),
         );
-        hero!.style.setProperty('--partition-x', `${106 - crossing * 224}%`);
+        hero!.style.setProperty(
+            '--partition-x',
+            `${78 + opening * 28 - crossing * 224}%`,
+        );
         hero!.style.setProperty(
             '--plate-scale',
             String(isStatic ? 1 : plateScale),
@@ -125,14 +123,14 @@ export function initArchitecturalScene(host: HTMLElement): void {
         );
         hero!.style.setProperty(
             '--intro-opacity',
-            String(isStatic ? 1 : 1 - ease(progress, 0.39, 0.47)),
+            String(isStatic ? 1 : 1 - ease(progress, 0.3, 0.42)),
         );
         hero!.style.setProperty(
             '--detail-copy',
-            String(isStatic ? 0 : ease(progress, 0.78, 0.85)),
+            String(isStatic ? 0 : ease(progress, 0.69, 0.79)),
         );
         if (introCopy) {
-            introCopy.inert = !isStatic && progress > 0.47;
+            introCopy.inert = !isStatic && progress > 0.42;
             introCopy.setAttribute('aria-hidden', String(introCopy.inert));
         }
         if (detailCopy) {
@@ -144,11 +142,9 @@ export function initArchitecturalScene(host: HTMLElement): void {
         hero!.style.setProperty('--story-progress', String(progress));
         if (chapter)
             chapter.textContent =
-                roomProgress < 0.62
-                    ? '01 / A considered detail'
-                    : roomProgress < 0.85
-                      ? '02 / A warmer atmosphere'
-                      : '03 / A space comes to life';
+                progress < 0.25
+                    ? '01 / Scroll to bring the room to life'
+                    : '01 / A space comes to life';
 
         if (model && renderer && visible && !isStatic) {
             // Apply the same modest photographic pan and scale to the ceiling anchor.
@@ -160,66 +156,29 @@ export function initArchitecturalScene(host: HTMLElement): void {
             const anchorX =
                 (1060 * imageScale + cropX - width / 2) * plateScale +
                 width / 2 +
-                THREE.MathUtils.lerp(
-                    -0.012 * approach,
-                    0.012 * (1 - settle),
-                    transfer,
-                ) *
-                    width;
+                plateShift * width;
             const anchorY =
-                (THREE.MathUtils.lerp(120, 90, transfer) * imageScale +
-                    cropY -
-                    height / 2) *
+                ((inDetail ? 90 : 120) * imageScale + cropY - height / 2) *
                     plateScale +
                 height / 2;
             const finalHeight =
-                THREE.MathUtils.lerp(260, 290, transfer) *
-                imageScale *
-                plateScale;
-            const closeHeight = Math.min(height * 0.89, finalHeight * 2.9);
-            const projectedHeight =
-                THREE.MathUtils.lerp(closeHeight, finalHeight, travel) *
-                (1 + arc * 0.22);
+                (inDetail ? 290 : 260) * imageScale * plateScale;
             const tangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-            const objectScale = (finalHeight * (2 * tangent * 5)) / height;
-            const depth =
-                (objectScale * height) / (2 * tangent * projectedHeight);
-            const pixelToWorld = (2 * tangent * depth) / height;
-            const x =
-                -arc * width * (width < 901 ? 0.16 : 0.13) +
-                THREE.MathUtils.lerp(
-                    width * (width < 901 ? 0.76 : 0.73),
-                    anchorX,
-                    travel,
-                );
-            const y =
-                THREE.MathUtils.lerp(-height * 0.13, anchorY, travel) +
-                arc * height * 0.1;
+            const pixelToWorld = (2 * tangent * 5) / height;
             model.position.set(
-                (x - width / 2) * pixelToWorld,
-                (height / 2 - y) * pixelToWorld,
-                5 - depth,
+                (anchorX - width / 2) * pixelToWorld,
+                (height / 2 - anchorY) * pixelToWorld,
+                0,
             );
-            model.scale.setScalar(objectScale);
-            model.rotation.set(
-                0.1 * (1 - travel),
-                -0.55 * (1 - travel) + arc * 0.12,
-                -0.045 * (1 - travel) +
-                    Math.sin(transfer * Math.PI * 2) * 0.065 +
-                    landingSway,
-            );
+            model.scale.setScalar(finalHeight * pixelToWorld);
+            model.rotation.set(0, 0, 0);
             luminousMaterials.forEach((material) => {
                 material.emissiveIntensity = (inDetail ? 1 : light) * 1.65;
             });
             renderer.render(scene, camera);
             host.style.setProperty('--pendant-x', `${anchorX}px`);
             host.style.setProperty('--pendant-y', `${anchorY}px`);
-            host.style.setProperty(
-                '--pendant-seated',
-                String(
-                    ease(roomProgress, 0.55, 0.63) * (1 - ease(arc, 0, 0.15)),
-                ),
-            );
+            host.style.setProperty('--pendant-seated', '1');
         }
         if (screen) {
             const screenRect = screen.getBoundingClientRect();

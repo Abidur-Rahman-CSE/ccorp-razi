@@ -88,7 +88,7 @@
     background: #211e19;
 }
 .architecture-hero.scene-ready:not(.scene-static) {
-    height: 375svh;
+    height: 275svh;
 }
 .architecture-sticky {
     position: sticky;
@@ -115,7 +115,7 @@
     opacity: var(--room-light);
 }
 .architecture-scene canvas {
-    z-index: 4;
+    z-index: 1;
     position: absolute;
     inset: 0;
     width: 100%;
@@ -833,7 +833,7 @@
         min-height: 780px;
     }
     .architecture-hero.scene-ready:not(.scene-static) {
-        height: calc(780px + 245svh);
+        height: calc(780px + 165svh);
     }
     .architecture-scene {
         top: 360px;
@@ -1398,4 +1398,20 @@
         57% 28%;
     border-right: 10px solid #24170f;
     border-left: 2px solid #94704a;
+}
+
+.scene-ready:not(.scene-static) .architecture-copy {
+    transform: translateY(calc(var(--entrance, 0) * -24px));
+}
+.room-partition::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 74% 34%, #e7af6540, transparent 57%);
+    pointer-events: none;
+}
+@media (max-width: 900px) {
+    .room-partition {
+        mask-image: linear-gradient(to bottom, transparent, #000 110px);
+    }
 }
