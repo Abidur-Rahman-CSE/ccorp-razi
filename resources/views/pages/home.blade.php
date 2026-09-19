@@ -5,7 +5,7 @@
 
     <section class="architecture-hero" aria-label="Introduction">
         <div class="architecture-sticky">
-            <div class="architecture-scene" data-architectural-scene data-scene-state="loading" data-model="{{ asset('models/pendant/pendant.gltf') }}">
+            <div class="architecture-scene" data-architectural-scene data-scene-state="loading" data-model="{{ asset('models/pendant/ribbed-pendant.glb') }}">
                 <img class="room-plate room-off" data-room-off src="{{ asset('images/showcase/pendant-room-off.webp') }}" alt="A quiet sitting room with walnut, travertine and linen, overlooking Dhaka at dusk" width="1536" height="1024" fetchpriority="high">
                 <img class="room-plate room-on" data-room-on src="{{ asset('images/showcase/pendant-room-on.webp') }}" alt="" aria-hidden="true" width="1536" height="1024" decoding="async">
                 <img class="room-plate detail-plate" data-detail-plate src="{{ asset('images/showcase/pendant-detail.webp') }}" alt="Walnut wall and sculptural travertine console with a ceramic vase" width="1536" height="1024" decoding="async">

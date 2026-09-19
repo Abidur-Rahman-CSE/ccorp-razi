@@ -171,9 +171,14 @@ export function initArchitecturalScene(host: HTMLElement): void {
                 0,
             );
             model.scale.setScalar(finalHeight * pixelToWorld);
-            model.rotation.set(0, 0, 0);
+            model.rotation.set(
+                0.025 * Math.sin(opening * Math.PI),
+                -0.25 + opening * 0.55 + settle * 0.18,
+                0.018 * Math.sin(opening * Math.PI * 2),
+            );
             luminousMaterials.forEach((material) => {
-                material.emissiveIntensity = (inDetail ? 1 : light) * 1.65;
+                material.emissiveIntensity =
+                    0.12 + (inDetail ? 1 : light) * 0.9;
             });
             renderer.render(scene, camera);
             host.style.setProperty('--pendant-x', `${anchorX}px`);
@@ -323,15 +328,10 @@ export function initArchitecturalScene(host: HTMLElement): void {
                         : [child.material];
                     materials.forEach(
                         (material: THREE.MeshStandardMaterial) => {
-                            if (
-                                material.name.includes('glass') ||
-                                material.name.includes('globe')
-                            ) {
+                            if (material.name.includes('bulb')) {
                                 material.emissive.set('#ffd39a');
                                 material.emissiveIntensity = 0;
                                 luminousMaterials.push(material);
-                            } else {
-                                material.color.set('#c5a576');
                             }
                         },
                     );
