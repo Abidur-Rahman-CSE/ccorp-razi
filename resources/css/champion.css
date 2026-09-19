@@ -115,6 +115,7 @@
     opacity: var(--room-light);
 }
 .architecture-scene canvas {
+    z-index: 4;
     position: absolute;
     inset: 0;
     width: 100%;
@@ -1282,7 +1283,6 @@
 /* Both photographic chapters share one camera and one pendant canvas. */
 .detail-plate {
     opacity: var(--detail-reveal, 0);
-    filter: brightness(calc(0.62 + var(--detail-light, 0) * 0.38));
 }
 .architecture-copy,
 .scene-caption {
@@ -1356,4 +1356,46 @@
         gap: 14px;
         font-size: 8px;
     }
+}
+
+/* One opaque timber plane hides the cut; photographs never dissolve together. */
+.scene-ready:not(.scene-static) .room-plate {
+    transform: translateX(var(--plate-shift, 0px)) scale(var(--plate-scale, 1));
+}
+.room-partition {
+    display: none;
+    position: absolute;
+    inset: -2px auto -2px 0;
+    width: 112%;
+    z-index: 3;
+    pointer-events: none;
+    transform: translateX(var(--partition-x, 112%));
+    background: #382619;
+    box-shadow:
+        -24px 0 48px #100b0755,
+        28px 0 56px #100b0755;
+}
+.scene-ready:not(.scene-static) .room-partition {
+    display: block;
+}
+.room-partition span {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(
+            90deg,
+            #120b0866,
+            transparent 12%,
+            #120b0822 88%,
+            #10090599
+        ),
+        url('/images/showcase/pendant-detail.webp');
+    background-size:
+        100% 100%,
+        300% 400%;
+    background-position:
+        center,
+        57% 28%;
+    border-right: 10px solid #24170f;
+    border-left: 2px solid #94704a;
 }

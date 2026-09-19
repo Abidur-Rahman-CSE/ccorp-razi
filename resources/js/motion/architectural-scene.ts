@@ -93,32 +93,47 @@ export function initArchitecturalScene(host: HTMLElement): void {
         progress += (target - progress) * (1 - Math.exp(-delta / 65));
         if (Math.abs(target - progress) < 0.0001) progress = target;
         const roomProgress = clamp(progress / 0.48, 0, 1);
-        const handover = ease(progress, 0.48, 0.67);
-        const departure = ease(progress, 0.88, 1);
-        const detailLight = ease(progress, 0.68, 0.78);
+        // The foreground hides the photographic cut while the pendant travels in front.
+        const crossing = ease(progress, 0.44, 0.74);
+        const inDetail = progress >= 0.59;
+        const transfer = ease(progress, 0.43, 0.79);
+        const arc = Math.sin(transfer * Math.PI);
+        const landing = clamp((progress - 0.79) / 0.14, 0, 1);
+        const landingSway =
+            Math.sin(landing * Math.PI * 2) * Math.pow(1 - landing, 2) * 0.018;
+        const approach = ease(progress, 0.4, 0.59);
+        const settle = ease(progress, 0.59, 0.78);
+        const plateScale = inDetail
+            ? 1.035 - settle * 0.015
+            : 1 + approach * 0.035;
+        const plateShift = inDetail ? 0.012 * (1 - settle) : -0.012 * approach;
         const travel = ease(roomProgress, 0.07, 0.62);
-        const light =
-            ease(roomProgress, 0.65, 0.85) * (1 - ease(progress, 0.46, 0.57));
-        const showDetail = !isStatic && progress > 0.565;
+        const light = ease(roomProgress, 0.65, 0.85);
+        const showDetail = !isStatic && progress > 0.78;
         hero!.style.setProperty(
             '--detail-reveal',
-            String(isStatic ? 0 : handover),
+            String(!isStatic && inDetail ? 1 : 0),
+        );
+        hero!.style.setProperty('--partition-x', `${106 - crossing * 224}%`);
+        hero!.style.setProperty(
+            '--plate-scale',
+            String(isStatic ? 1 : plateScale),
         );
         hero!.style.setProperty(
-            '--detail-light',
-            String(detailLight * (1 - ease(progress, 0.86, 0.98))),
+            '--plate-shift',
+            `${isStatic ? 0 : plateShift * width}px`,
         );
         hero!.style.setProperty(
             '--intro-opacity',
-            String(isStatic ? 1 : 1 - ease(progress, 0.48, 0.56)),
+            String(isStatic ? 1 : 1 - ease(progress, 0.39, 0.47)),
         );
         hero!.style.setProperty(
             '--detail-copy',
-            String(isStatic ? 0 : ease(progress, 0.56, 0.65)),
+            String(isStatic ? 0 : ease(progress, 0.78, 0.85)),
         );
         if (introCopy) {
-            introCopy.inert = showDetail;
-            introCopy.setAttribute('aria-hidden', String(showDetail));
+            introCopy.inert = !isStatic && progress > 0.47;
+            introCopy.setAttribute('aria-hidden', String(introCopy.inert));
         }
         if (detailCopy) {
             detailCopy.inert = !showDetail;
@@ -136,28 +151,42 @@ export function initArchitecturalScene(host: HTMLElement): void {
                       : '03 / A space comes to life';
 
         if (model && renderer && visible && !isStatic) {
-            // object-fit: cover, with an independent portrait crop. The camera never moves.
+            // Apply the same modest photographic pan and scale to the ceiling anchor.
             const imageScale = Math.max(width / 1536, height / 1024);
             const imageWidth = 1536 * imageScale;
             const imageHeight = 1024 * imageScale;
             const cropX = (width - imageWidth) * (width < 901 ? 0.68 : 0.5);
             const cropY = (height - imageHeight) * 0.5;
-            const anchorX = 1060 * imageScale + cropX;
+            const anchorX =
+                (1060 * imageScale + cropX - width / 2) * plateScale +
+                width / 2 +
+                THREE.MathUtils.lerp(
+                    -0.012 * approach,
+                    0.012 * (1 - settle),
+                    transfer,
+                ) *
+                    width;
             const anchorY =
-                THREE.MathUtils.lerp(120, 90, handover) * imageScale + cropY;
+                (THREE.MathUtils.lerp(120, 90, transfer) * imageScale +
+                    cropY -
+                    height / 2) *
+                    plateScale +
+                height / 2;
             const finalHeight =
-                THREE.MathUtils.lerp(260, 290, handover) * imageScale;
+                THREE.MathUtils.lerp(260, 290, transfer) *
+                imageScale *
+                plateScale;
             const closeHeight = Math.min(height * 0.89, finalHeight * 2.9);
             const projectedHeight =
                 THREE.MathUtils.lerp(closeHeight, finalHeight, travel) *
-                (1 + Math.sin(handover * Math.PI) * 0.48);
+                (1 + arc * 0.22);
             const tangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
             const objectScale = (finalHeight * (2 * tangent * 5)) / height;
             const depth =
                 (objectScale * height) / (2 * tangent * projectedHeight);
             const pixelToWorld = (2 * tangent * depth) / height;
             const x =
-                Math.sin(handover * Math.PI) * width * 0.075 +
+                -arc * width * (width < 901 ? 0.16 : 0.13) +
                 THREE.MathUtils.lerp(
                     width * (width < 901 ? 0.76 : 0.73),
                     anchorX,
@@ -165,8 +194,7 @@ export function initArchitecturalScene(host: HTMLElement): void {
                 );
             const y =
                 THREE.MathUtils.lerp(-height * 0.13, anchorY, travel) +
-                Math.sin(handover * Math.PI) * height * 0.055 -
-                departure * height * 1.25;
+                arc * height * 0.1;
             model.position.set(
                 (x - width / 2) * pixelToWorld,
                 (height / 2 - y) * pixelToWorld,
@@ -175,15 +203,13 @@ export function initArchitecturalScene(host: HTMLElement): void {
             model.scale.setScalar(objectScale);
             model.rotation.set(
                 0.1 * (1 - travel),
-                -0.55 * (1 - travel) + Math.sin(handover * Math.PI) * 0.45,
+                -0.55 * (1 - travel) + arc * 0.12,
                 -0.045 * (1 - travel) +
-                    Math.sin(handover * Math.PI) * 0.08 -
-                    departure * 0.06,
+                    Math.sin(transfer * Math.PI * 2) * 0.065 +
+                    landingSway,
             );
             luminousMaterials.forEach((material) => {
-                material.emissiveIntensity =
-                    (light + detailLight * (1 - ease(progress, 0.85, 0.92))) *
-                    1.65;
+                material.emissiveIntensity = (inDetail ? 1 : light) * 1.65;
             });
             renderer.render(scene, camera);
             host.style.setProperty('--pendant-x', `${anchorX}px`);
@@ -191,9 +217,7 @@ export function initArchitecturalScene(host: HTMLElement): void {
             host.style.setProperty(
                 '--pendant-seated',
                 String(
-                    ease(roomProgress, 0.55, 0.63) *
-                        (1 - Math.sin(handover * Math.PI)) *
-                        (1 - departure),
+                    ease(roomProgress, 0.55, 0.63) * (1 - ease(arc, 0, 0.15)),
                 ),
             );
         }
@@ -359,6 +383,17 @@ export function initArchitecturalScene(host: HTMLElement): void {
                 host.dataset.sceneState = 'ready';
                 hero!.classList.add('scene-ready');
                 preferences();
+                progress = clamp(
+                    -hero!.getBoundingClientRect().top /
+                        Math.max(
+                            1,
+                            hero!.offsetHeight -
+                                (host.parentElement?.clientHeight ??
+                                    host.clientHeight),
+                        ),
+                    0,
+                    1,
+                );
             })
             .catch(() => {
                 fallback();

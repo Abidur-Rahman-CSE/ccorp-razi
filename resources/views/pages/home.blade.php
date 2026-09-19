@@ -11,6 +11,7 @@
                 <img class="room-plate detail-plate" data-detail-plate src="{{ asset('images/showcase/pendant-detail.webp') }}" alt="Walnut wall and sculptural travertine console with a ceramic vase" width="1536" height="1024" decoding="async">
                 <span class="pendant-contact" aria-hidden="true"></span>
                 <canvas aria-hidden="true"></canvas>
+                <div class="room-partition" aria-hidden="true"><span></span></div>
             </div>
             <div class="hero-atmosphere" aria-hidden="true"></div>
             <div class="architecture-copy">
